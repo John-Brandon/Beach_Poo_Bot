@@ -38,10 +38,7 @@ library(dplyr)     # For data wrangling
 #
 # Read Station ID keys from table ----------------------------------------------
 #
-setwd("..")
-setwd("./data")
-station_key = read.csv("station_key.csv", stringsAsFactors = FALSE)
-setwd("..")
+station_key = read.csv("./data/station_key.csv", stringsAsFactors = FALSE)
 
 #
 # Download publically available data (*.csv) -----------------------------------
@@ -52,7 +49,7 @@ setwd("..")
 #  See also: http://sfwater.org/cfapps/lims/beachmain1.cfm
 
 # Generate a temporary file name as recepticle for data file
-temporaryFile <- tempfile()
+temporaryFile = tempfile()
 
 # Download data file into temporary file
 download.file("http://sfwater.org/tasks/lims.csv",
@@ -61,15 +58,14 @@ download.file("http://sfwater.org/tasks/lims.csv",
 
 # Read data file and log time stamp
 dat = read.csv(temporaryFile, stringsAsFactors = FALSE)
-setwd("./data")                           # Enter data directory
-download_time = as.character(Sys.time())  # Get current timestamp
+file.remove(temporaryFile)                # Remove temporary file
 
 #
 # Log data by writing to output file in ./data directory -----------------------
 #
-write.csv(dat, file = paste("lims_", download_time, ".csv", sep = ""), row.names = FALSE)
-setwd("..")                 # Exit data directory
-file.remove(temporaryFile)  # Remove temporary file
+download_time = as.character(Sys.time())                       # Timestamp
+log_file = paste("./data/", "lims_", download_time, sep = "")  # File name
+write.csv(dat, file = log_file, row.names = FALSE)             # Output *.csv
 
 #
 # Clean downloaded data --------------------------------------------------------
@@ -78,8 +74,8 @@ file.remove(temporaryFile)  # Remove temporary file
 dat %<>% mutate(SAMPLE_DATE = as.Date(SAMPLE_DATE)) %>%
          filter(SOURCE != "") # remove any extraneous lines at end of file
 
-# The DATA variable has some ">" and "<" signs. Remove those using regex.
-# Replace (remove) all non-alphanumeric characters and convert DATA to numeric
+# The DATA variable has some ">" and "<" prefix signs. Remove those using regex.
+# Replace (remove) non-alphanumeric characters and convert DATA to numeric
 dat %<>% mutate(DATA = str_replace_all(DATA, "[^[:alnum:]]", ""),
                 DATA = as.numeric(DATA))
 
