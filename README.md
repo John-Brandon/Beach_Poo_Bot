@@ -12,7 +12,7 @@ This TwitterBot downloads and processes San Francisco Bay and Ocean Beach water 
 
 After downloading the data, the bot compares the latest time-date stamp with that from the previous download, and thus determines if a new sample has been posted. 
 
-If a new sample has been posted, the bot tweets the data (i.e. *E. coli* counts per 100ml). The bot does not tweet if no new samples have been posted since the previous download.
+If a new sample has been posted, the bot tweets the updated data (i.e. *E. coli* counts per 100ml). The bot does not tweet if no new samples have been posted since the previous download.
 
 The main code for the bot is written in R. The program can be scripted by executing `./R/rShellScript.sh` in Bash (you'll likely need to edit the \*.sh file to include your Rscript path, etc.).   
 
