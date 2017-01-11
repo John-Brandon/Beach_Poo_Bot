@@ -3,7 +3,7 @@
 ---
 
 ### Bio :umbrella:
-[@BeachPooBot](https://twitter.com/BeachPooBot) was born into the wild on 2016-03-19 14:05:37 (local time), in Pacifica, CA. It has been processing data files daily since then -- tweeting fecal counts, as they are updated, for Ocean Beach, San Francisco. 
+<a href="https://twitter.com/BeachPooBot" target="_blank">@BeachPooBot</a> was born into the wild on 2016-03-19 14:05:37 (local time), in Pacifica, CA. It has been processing data files daily since then -- tweeting fecal counts, as they are updated, for Ocean Beach, San Francisco. 
 
 For a recent raw data set, dating back to 2015-12-21, and containing all associated sampling locations (including SF Bay), see the time series of `*.csv` files in BeachPooBot's data directory.
 
