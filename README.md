@@ -1,4 +1,4 @@
-## Beach :poop: Bot 
+## :poop: Beach Poo Bot 
 
 ---
 
