@@ -10,8 +10,12 @@ library("twitteR")
 
 rm(list = ls())     # Clear workspace
 print(Sys.time())   # Check
-setwd("./R")        # Change to directory with R code files
-source("ScrapeWebData.R")  # Run code in ScrapeWebData.R file
+print(getwd())
+
+# Run code in ScrapeWebData.R file
+# The Bash rShellScript.sh starts in ./BeachWater directory (e.g. ~/BeachWater)
+# The R source codes (and Bash script) are under ./BeachWater/R
+source("./R/ScrapeWebData.R")
 
 # If previously logged date is not equal to most recent date, continue processing
 # Comparative dates initialized by ScrapeWebData.R code
