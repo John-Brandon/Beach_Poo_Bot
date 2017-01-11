@@ -20,7 +20,7 @@ Currently, the bot is automated using a \*.plist file running on Mac OS.  The \*
 
 A global Launch Agent is run on my Mac OS via /Library/LaunchAgents/com.rTask.plist. The XML for that file is shown below:
 
-'''XML
+```XML
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -52,5 +52,6 @@ A global Launch Agent is run on my Mac OS via /Library/LaunchAgents/com.rTask.pl
 	</array>
 </dict>
 </plist>
-'''      
+```
+
 
