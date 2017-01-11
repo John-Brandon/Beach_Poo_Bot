@@ -14,7 +14,7 @@ After downloading the data, the bot compares the latest time-date stamp with tha
 
 If a new sample has been posted, the bot tweets the updated data (i.e. *E. coli* counts per 100ml). The bot does not tweet if no new samples have been posted since the previous download.
 
-The main code for the bot is written in `R`. See the code files `./R/ScrapePoo.R' (processing data) and `./R/TweetShit.R` (interface with Twitter API).  
+The main code for the bot is written in `R`. See the code files `./R/ScrapePoo.R` (processing data) and `./R/TweetShit.R` (interface with Twitter API).  
 
 The program can be scripted in Bash by executing `./R/rShellScript.sh` (to replicate this, you'll likely need to edit the \*.sh file to include your Rscript path, etc.).   
 
