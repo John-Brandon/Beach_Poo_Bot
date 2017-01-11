@@ -28,6 +28,10 @@
 # OCEAN#21.1_SL, Ocean Beach at Sloat Boulevard
 # OCEAN#22_SL, Fort Funston
 #
+# Copyright 2016 John R. Brandon
+# This program is distributed under the terms of the GNU General Public License v3
+# (provided in the LICENSE file).
+#
 library(ggplot2)   # Plotting
 library(magrittr)  # For pipes, e.g. %>%
 library(stringr)   # For regex (regular expression) to remove unwanted characters, etc.

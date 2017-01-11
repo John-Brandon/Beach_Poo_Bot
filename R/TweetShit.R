@@ -4,6 +4,10 @@
 #             Sewer website
 # Notes:      ScrapeWebData.R does the heavy lifting. See the comments in that
 #             file for more details re: scraping, logging etc.
+#
+# Copyright 2016 John R. Brandon
+# This program is distributed under the terms of the GNU General Public License v3
+# (provided in the ../LICENSE file).
 
 # install.packages("twitteR")
 library("twitteR")  # R interface with Twitter API
