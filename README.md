@@ -18,7 +18,7 @@ The main code for the bot is written in `R`. See the code files `./R/ScrapePoo.R
 
 The program can be scripted in Bash by executing `./R/rShellScript.sh` (to replicate this, you would need to edit the `*.sh` file to include your `Rscript` path, etc.).   
 
-Currently, the bot is automated using a `*.plist` file running on Mac OS 10.11.6. The `*.plist` file is written in `XML`. It is stored under the global Launch Agent directory on my machine, i.e. `/Library/LaunchAgents/com.rTask.plist`. The `XML` for that file is shown below:
+Currently, the bot is automated using a `*.plist` file running on JB's laptop (Mac OS 10.11.6). The `*.plist` file is written in `XML`. It is stored under the global Launch Agent directory, i.e. `/Library/LaunchAgents/com.rTask.plist`. The `XML` for that file is shown below:
 
 ```XML
 <?xml version="1.0" encoding="UTF-8"?>
