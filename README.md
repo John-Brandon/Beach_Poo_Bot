@@ -1,4 +1,4 @@
-## Beach Poo Bot
+## Beach :poop: Bot 
 
 ---
 
@@ -16,5 +16,41 @@ If a new sample has been posted, the bot tweets the data (i.e. *E. coli* counts 
 
 The main code for the bot is written in R. The program can be scripted by executing `rShellScript.sh` in Bash (you'll likely need to edit the \*.sh file to include your Rscript path, etc.).   
 
-Currently, the bot is automated using a \*.plist file running on Mac OS.  The \*.plist file is written in XML. The freely available Mac OS LaunchControl GUI application can be used to write the automated run times in XML to the \*.plist. I haven't done this on Linux, but I think you'd want to write task times to a `chron` job file.     
+Currently, the bot is automated using a \*.plist file running on Mac OS.  The \*.plist file is written in XML. The freely available Mac OS LaunchControl GUI application can be used to write the automated run times in XML to the \*.plist. I haven't done this on Linux, but I think you'd want to write task times to a `chron` job file.
+
+A global Launch Agent is run on my Mac OS via /Library/LaunchAgents/com.rTask.plist. The XML for that file is shown below:
+
+'''XML
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.rTask</string>
+	<key>Program</key>
+	<string>/Users/johnbrandon/documents/R_hobby/BeachWater/R/rShellScript.sh</string>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardErrorPath</key>
+	<string>/tmp/com.rTask.err</string>
+	<key>StandardOutPath</key>
+	<string>/tmp/com.rTask.out</string>
+	<key>StartCalendarInterval</key>
+	<array>
+		<dict>
+			<key>Hour</key>
+			<integer>7</integer>
+			<key>Minute</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>Hour</key>
+			<integer>15</integer>
+			<key>Minute</key>
+			<integer>0</integer>
+		</dict>
+	</array>
+</dict>
+</plist>
+'''      
 
