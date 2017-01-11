@@ -3,7 +3,7 @@
 ---
 
 ### Bio 
-@BeachPooBot was born into the wild on 2016-03-19 14:05:37 (local time), in Pacifica, CA. It has been processing data logs daily since then, and tweeting fecal counts, as they are updated, for Ocean Beach, San Francisco. For a recent data set, starting in March, 2016 and containing all associated sampling locations (including SF Bay), see the time series of \*.csv files in BeachPooBot's data directory.
+@BeachPooBot was born into the wild on 2016-03-19 14:05:37 (local time), in Pacifica, CA. It has been processing data logs daily since then -- tweeting fecal counts, as they are updated, for Ocean Beach, San Francisco. For a recent data set, starting in March, 2016 and containing all associated sampling locations (including SF Bay), see the time series of \*.csv files in BeachPooBot's data directory.
 
 ### Technical details
 This TwitterBot downloads and processes San Francisco Bay and Ocean Beach water quality data. It does this twice a day, at 0700 and 1500 hrs (Pacific Time).
