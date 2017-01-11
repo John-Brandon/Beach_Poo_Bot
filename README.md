@@ -14,11 +14,11 @@ After downloading the data, the bot compares the latest time-date stamp with tha
 
 If a new sample has been posted, the bot tweets the updated data (i.e. *E. coli* counts per 100ml). The bot does not tweet if no new samples have been posted since the previous download.
 
-The main code for the bot is written in `R`. See the code files `./R/ScrapePoo.R` (data processing) and `./R/TweetShit.R` (to interface with Twitter API).  
+The main code for the bot is written in `R`. See the code files `./R/ScrapePoo.R` (data processing) and `./R/TweetShit.R` (to interface with Twitter's API).  
 
 The program can be scripted in Bash by executing `./R/rShellScript.sh` (to replicate this, you would need to edit the `*.sh` file to include your `Rscript` path, etc.).   
 
-Currently, the bot is automated using a `*.plist` file running on Mac OS 10.11.6.  The `*.plist` file is written in `XML`. A global Launch Agent is run on my Mac OS via `/Library/LaunchAgents/com.rTask.plist`. The `XML` for that file is shown below:
+Currently, the bot is automated using a `*.plist` file running on Mac OS 10.11.6. The `*.plist` file is written in `XML`. It is stored under the global Launch Agent directory on my machine, i.e. `/Library/LaunchAgents/com.rTask.plist`. The `XML` for that file is shown below:
 
 ```XML
 <?xml version="1.0" encoding="UTF-8"?>
