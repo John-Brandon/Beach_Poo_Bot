@@ -6,11 +6,10 @@
 #             file for more details re: scraping, logging etc.
 
 # install.packages("twitteR")
-library("twitteR")
+library("twitteR")  # R interface with Twitter API
 
 rm(list = ls())     # Clear workspace
-print(Sys.time())   # Check
-print(getwd())
+print(Sys.time())   # Written to stdout log file as a check.
 
 # Run code in ScrapeWebData.R file
 # The Bash rShellScript.sh starts in ./BeachWater directory (e.g. ~/BeachWater)
