@@ -51,21 +51,21 @@ station_key = read.csv("./data/station_key.csv", stringsAsFactors = FALSE)
 # Generate a temporary file name as recepticle for data file
 temporaryFile = tempfile()
 
-# Download data file into temporary file
+# Download data file into temporary file (admitedly convoluted, but it works)
 download.file("http://sfwater.org/tasks/lims.csv",
               destfile = temporaryFile,
               method = "curl")
 
-# Read data file and log time stamp
+# Transfer temp data file into memory, and log time stamp
 dat = read.csv(temporaryFile, stringsAsFactors = FALSE)
 file.remove(temporaryFile)                # Remove temporary file
+download_time = as.character(Sys.time())  # Timestamp
 
 #
 # Log data by writing to output file in ./data directory -----------------------
 #
-download_time = as.character(Sys.time())                       # Timestamp
-log_file = paste("./data/", "lims_", download_time, sep = "")  # File name
-write.csv(dat, file = log_file, row.names = FALSE)             # Output *.csv
+log_file = paste("./data/", "lims_", download_time, ".csv", sep = "")  # File name
+write.csv(dat, file = log_file, row.names = FALSE)                     # Output *.csv
 
 #
 # Clean downloaded data --------------------------------------------------------
