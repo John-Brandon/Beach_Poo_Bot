@@ -5,7 +5,9 @@
 ### Bio :umbrella:
 <a href="https://twitter.com/BeachPooBot" target="_blank">@BeachPooBot</a> was born into the wild on 2016-03-19 14:05:37 (local time), in Pacifica, CA. It has been processing publically available data files daily since then -- tweeting fecal counts, as they are updated, for Ocean Beach, San Francisco. 
 
-For a recent raw data set, dating back to 2015-12-21, and containing all associated sampling locations (including SF Bay), see the time series of `*.csv` files in BeachPooBot's data directory.
+For a recent raw data set, dating back to 2015-12-21, see the time series of `*.csv` files in BeachPooBot's data directory. This data contains all available sampling locations including those in SF Bay. 
+
+<a hfref="http://www.cdph.ca.gov/HealthInfo/environhealth/water/Pages/Beaches.aspx" target="_blank">Regulations for public beaches and ocean water-contact sports areas are available from the California Department of Public Health.</a>  
 
 ### Technical details :ocean:
 This TwitterBot downloads and processes San Francisco Bay and Ocean Beach water quality data from the SF Water Power Sewer web server. It does this twice a day, at 0700 and 1500 hrs (Pacific Time).
