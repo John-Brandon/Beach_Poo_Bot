@@ -18,7 +18,7 @@ print(Sys.time())   # Written to stdout log file as a check.
 # Run code in ScrapeWebData.R file
 # The Bash rShellScript.sh starts in ./BeachWater directory (e.g. ~/BeachWater)
 # The R source codes (and Bash script) are under ./BeachWater/R
-source("./R/ScrapeWebData.R")
+source("./R/ScrapePoo.R")
 
 # If previously logged date is not equal to most recent date, continue processing
 # Comparative dates initialized by ScrapeWebData.R code
