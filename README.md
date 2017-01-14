@@ -14,7 +14,7 @@ This TwitterBot downloads and processes San Francisco Bay and Ocean Beach water 
 
 After downloading the data, the bot compares the latest sample time-date with that from the previous download, and thus determines if a new sample has been posted. 
 
-If a new sample has been posted, the bot tweets the updated data (i.e. *E. coli* counts per 100ml). The bot does not tweet if no new samples have been posted.
+If a new sample has been posted, the bot tweets updated data for Ocean Beach at Lincoln Way (i.e. *E. coli* counts per 100ml). A second tweet is also sent with the "Open" or "Posted" status for sampling locations along Ocean Beach and into the mouth of SF Bay. The bot does not tweet if no new samples have been posted.
 
 The main code for the bot is written in `R`. See the code files `./R/ScrapePoo.R` (data processing) and `./R/TweetShit.R` (to interface with Twitter's API).  
 
