@@ -1,14 +1,14 @@
 # GetBeachStatus.R
 #
 # Tasks:
-#   1. Scrape location closure status from webpage.
+#   1. Scrape location posted status from webpage.
 #   2. Download image file showing map and sampling locations.
 #      This second task is a work in progress. The map of sampling locations
 #      is rendered from multiple images in the html, which complicates
 #      reverse engineering the map showing sampling locations.
 #
 # Motivation:
-#   1. Explore options for information that could be be tweeted.
+#   1. Augment information that can be be tweeted.
 #
 # Copyright 2016 John R. Brandon
 # This program is distributed under the terms of the GNU General Public License v3
@@ -20,9 +20,9 @@ library(purrr)  # Map along vector(s) of inputs to function calls (split-apply-c
 # Scrape beach status for a given sampling location ----------------------------
 get_beach_status = function(beach_name, url){
   # Beaches should be posted as "Open" or "Closed".
-  # Code has been tested sparingly for Ocean Beach locations.
+  # Code has been tested for Ocean Beach locations to Crissy Field.
   # Bayside location confirmations would be good.
-  # Used SelectorGadget browser plug-in to find css_selector with beach status.
+  # Used SelectorGadget browser plug-in to manually ID css_selector with beach status.
   # See also: https://blog.rstudio.org/2014/11/24/rvest-easy-web-scraping-with-r/
   css_selector = "table:nth-child(7) td"
   posted_status = read_html(url) %>%
@@ -46,16 +46,17 @@ location_urls = c(
 )
 location_names = names(location_urls)
 
-# Use `purrr` package for mapping function get_beach_status along vector elements
+# Use `purrr` package
+# Mapping parallel elements of vector arguments to the function get_beach_status
 location_status = map2_chr(location_names, location_urls, get_beach_status)
 
 # Collapse into one string (tweet) with "\n" newline characters
 status_tweet = paste(location_status, collapse = "\n", sep = "")
 status_tweet = paste(status_tweet, sep = "")
-status_tweet
+
 
 #
-# This code is a work in progress -- more involved than I thought.
+# This code is a work in progress -- more involved than I thought at first.
 # Download image with map of sampling locations --------------------------------
 # get_imgsrc = function(url, node){
 #   # Retrieve source of node (e.g. "/maps/beach_map_northpoint.png")
