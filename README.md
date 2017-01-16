@@ -1,5 +1,8 @@
 ## Beach Poo Bot  :poop:
 
+![alt text][example_plot]
+
+[example_plot]: https://github.com/John-Brandon/Beach_Poo_Bot/blob/master/timeseries_2017-01-10.png "Time series plots are output daily."
 ---
 
 ### Bio :umbrella:
@@ -18,7 +21,7 @@ After downloading the data, the bot compares the latest sample time-date with th
 
 If a new sample has been posted, the bot tweets updated data for Ocean Beach at Lincoln Way (i.e. *E. coli* counts per 100ml). A second tweet is also sent with the "Open" or "Posted" status for sampling locations along Ocean Beach and into the mouth of SF Bay. The bot does not tweet if no new samples have been posted.
 
-The main code for the bot is written in `R`. See the code files for additional details in the comments: `./R/ScrapePoo.R` (data processing); `./R/GetBeachStatus.R` (web-scraping)  and `./R/TweetShit.R` (to interface with Twitter's API).  
+The main code for the bot is written in `R`. See the code files for additional comments and details: `./R/ScrapePoo.R` (data processing); `./R/GetBeachStatus.R` (web-scraping)  and `./R/TweetShit.R` (to interface with Twitter's API).  
 
 The program can be scripted in Bash by executing `./R/rShellScript.sh` To replicate this, you would need to edit the `*.sh` file to include your paths.   
 
