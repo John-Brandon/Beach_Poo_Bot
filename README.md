@@ -1,10 +1,10 @@
 ## Beach Poo Bot  :poop:
 
-<img src="timeseries_2017-01-10.png" alt="Drawing" style="width: 50px;"/>
+<img src="timeseries_2017-01-10.png" alt="Drawing" style="width: 200px;"/>
 
 ![alt text][example_plot]
 
-[example_plot]: https://github.com/John-Brandon/Beach_Poo_Bot/blob/master/timeseries_2017-01-10.png "Time series plots are output daily."
+[example_plot]: timeseries_2017-01-10.png "Time series plots are output daily."
 ---
 
 ### Bio :umbrella:
