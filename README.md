@@ -1,6 +1,6 @@
 ## Beach Poo Bot  :poop:
 
-<img src="timeseries_2017-01-10.png" width="750" align="center" title="Time series plots are output daily.">
+<img src="timeseries_2017-01-10.png" width="550" align="center" title="Time series plots are output daily.">
 
 ---
 
