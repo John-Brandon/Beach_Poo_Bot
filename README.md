@@ -1,6 +1,6 @@
 ## Beach Poo Bot  :poop:
 
-<img src="timeseries_2017-01-10.png" alt="Drawing" style="width: 200px;"/>
+<img src="timeseries_2017-01-10.png" alt="Drawing" style="width: 50px;"/>
 
 ![alt text][example_plot]
 
