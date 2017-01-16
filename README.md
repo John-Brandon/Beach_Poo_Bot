@@ -1,5 +1,7 @@
 ## Beach Poo Bot  :poop:
 
+<img src="timeseries_2017-01-10.png" width="48">
+
 ![alt text][example_plot]
 [example_plot]: timeseries_2017-01-10.png "Time series plots are output daily."
 
