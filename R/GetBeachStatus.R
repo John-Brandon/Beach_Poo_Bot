@@ -16,6 +16,9 @@
 # ----------------------------------------------------------------------
 library(rvest)  # Web scraping
 library(purrr)  # Map along vector(s) of inputs to function calls (split-apply-combine)
+library(tidyverse)  # Includes pipes %>% in R
+
+source("./R/Emoji_unicode.R")  # Returns a set of emoji unicode
 
 # Scrape beach status for a given sampling location ----------------------------
 get_beach_status = function(beach_name, url){
@@ -34,8 +37,37 @@ get_beach_status = function(beach_name, url){
                   gsub(x = ., pattern = "^.", replacement = "") %>%
                   strsplit(split = ":", fixed = TRUE) %>%
                   unlist()
-  # paste(beach_name, posted_status[2], sep = ":")
   posted_status[2]
+}
+
+check_sewer_status = function(url){
+  # Scrape for Combined Sewer Overflow Status
+  cs = "b"
+  read_html(url) %>%
+    html_node(css = cs) %>%
+    html_text %>%
+    unlist()  # return vector
+}
+
+merge_statuses = function(sew_status, loc_status){
+  # If not "Combined Sewer Overflow" status,
+  # replace with location "Posted" or "Open" status
+  if(is.na(sew_status)){
+    sew_status = loc_status
+  }
+  sew_status  # return
+}
+
+set_emoji = function(status){
+  # Add emoji to latest beach status
+  if(status == "Open"){
+    emoj = ""  # If location posted as open, don't use emoji.
+  }else if(status == "Posted"){
+    emoj = warning_emoji_uni # red_circle_emoji_uni
+  }else{  # "Sewer Overflow"
+    emoj = paste(warning_emoji_uni, skull_emoji_uni, bangbang_emoji_uni)
+  }
+  paste(status, emoj, sep = "")  # Add corresponding emoji unicode to end of line
 }
 
 # Create vector of sampling location URLs --------------------------------------
@@ -43,66 +75,54 @@ location_urls = c(
   Sloat = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4602",
   Lincoln = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4605",
   Balboa = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4604",
-  "China Beach" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4607",
-  "Crissy Field W" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4611",
-  "Crissy Field E" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4612"
+  # "China Beach" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4607"
+  "Baker Beach W" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4608",
+  "Crissy Field W" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4611"
+  # "Crissy Field E" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4612"
 )
+
 # Create vector of sampling location names
 location_names = names(location_urls)
 
-# Use `purrr` package
+# Scrape status "Posted" or "Open" for each location ---------------------------
+# Uses `purrr` package and map function.
 # Mapping parallel elements of vector arguments to the function get_beach_status.
-# Also, web scraping function returns strings with leading blank space, eg " Posted".
-location_status = map2_chr(location_names, location_urls, get_beach_status)
+location_status = map2_chr(location_names, location_urls, get_beach_status) %>%
+  gsub(x = ., pattern = "^.", replacement = "")  # Remove leading blank spaces
+
+# Scrape Sewer Overflow Status -------------------------------------------------
+# Inserts location status "Open" or "Posted" if sewer status not "Combined Sewer Overflow"
+poo_status = map_chr(location_urls, check_sewer_status) %>%  # Scrape sewer status
+  gsub(x =., pattern = "Combined ", replacement = "", fixed = FALSE) %>%  # Edit string
+  map2_chr(., location_status, merge_statuses)  # Fill out statuses
 
 # Read vector with previous beach status from log file
 previous_status = readLines("./data/location_status.out")
 
-# location_status = rep("Open", times = 6)  # Testing
-location_status = previous_status
-
 # Check to see if the status at ANY beach has been changed since last check
-refresh_status = any(previous_status != location_status)
-
+refresh_status = any(previous_status != poo_status)
 if (refresh_status) {
   # Concatinate location + status
   # Collapse into one string (a tweet) with "\n" newline characters
-  location_status = paste(location_names, location_status, sep = ":")
-  status_tweet = paste(location_status, collapse = "\n", sep = "")
+  status_tweet = poo_status %>%
+    map_chr(set_emoji) %>%  # add corresponding emoji
+    paste(location_names, ., sep = ": ") %>%  # add location name
+    paste(collapse = "\n")                    # new line between locations
 } else {
   status_tweet = "No status update"
 }
 
-# Write vector with beach status to log file
-write(x = location_status, file = "./data/location_status.out", sep = "\n")
+# Write vector with each beach status to log file
+write(x = poo_status, file = "./data/location_status.out", sep = "\n")
 
+# tweet("Testing")
+# tweet(status_tweet)
 
-
+# # Split tweet in two if over 140 character limit
+# tweet_nchar = nchar(status_tweet)  # really, we want to subtract emoji unicode from this
+# if(tweet_nchar > 140){
 #
-# This code is a work in progress -- more involved than I thought at first.
-# Download image with map of sampling locations --------------------------------
-# get_imgsrc = function(url, node){
-#   # Retrieve source of node (e.g. "/maps/beach_map_northpoint.png")
-#   read_html(url) %>%
-#     html_node(css = node) %>%
-#     html_attr('src')
+# }else{
+#
 # }
-#
-# root_url = "http://www.sfwater.org/cfapps/lims"
-# root_url = "http://www.sfwater.org/cfapps"
-# main_url = "http://www.sfwater.org/cfapps/lims/beachmain1.cfm"
-#
-# node_sf = 'div+ img'  # Background map of SF
-#
-# foo = get_imgsrc(url = main_url, node = node_tmp)
-# download.file(url = foo, destfile = basename(foo), method = "curl")
-# system(paste("open", basename(foo)))
-#
-# # Download map of SF -----------------------------------------------------------
-# map_src = read_html(main_url) %>%
-#   html_node(css = node_sf) %>%
-#   html_attr('src')
-#
-# map_url = paste(root_url, map_src, sep = "/")
-# download.file(url = map_url, destfile = "foo.png", method = "curl")
 
