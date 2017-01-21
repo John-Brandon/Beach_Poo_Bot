@@ -24,15 +24,18 @@ get_beach_status = function(beach_name, url){
   # Bayside location confirmations would be good.
   # Used SelectorGadget browser plug-in to manually ID css_selector with beach status.
   # See also: https://blog.rstudio.org/2014/11/24/rvest-easy-web-scraping-with-r/
+  # On return, the posting status is prettified, eg blank first space removed
   css_selector = "table:nth-child(7) td"
   posted_status = read_html(url) %>%
                   html_node(css = css_selector) %>%
                   html_text() %>%
-                  gsub(pattern = "\r", replacement = "") %>%
-                  gsub(pattern = "\n", replacement = "") %>%
+                  gsub(x = ., pattern = "\r", replacement = "") %>%
+                  gsub(x = ., pattern = "\n", replacement = "") %>%
+                  gsub(x = ., pattern = "^.", replacement = "") %>%
                   strsplit(split = ":", fixed = TRUE) %>%
                   unlist()
-  paste(beach_name, posted_status[2], sep = ":")
+  # paste(beach_name, posted_status[2], sep = ":")
+  posted_status[2]
 }
 
 # Create vector of sampling location URLs --------------------------------------
@@ -44,15 +47,35 @@ location_urls = c(
   "Crissy Field W" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4611",
   "Crissy Field E" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4612"
 )
+# Create vector of sampling location names
 location_names = names(location_urls)
 
 # Use `purrr` package
-# Mapping parallel elements of vector arguments to the function get_beach_status
+# Mapping parallel elements of vector arguments to the function get_beach_status.
+# Also, web scraping function returns strings with leading blank space, eg " Posted".
 location_status = map2_chr(location_names, location_urls, get_beach_status)
 
-# Collapse into one string (tweet) with "\n" newline characters
-status_tweet = paste(location_status, collapse = "\n", sep = "")
-status_tweet = paste(status_tweet, sep = "")
+# Read vector with previous beach status from log file
+previous_status = readLines("./data/location_status.out")
+
+# location_status = rep("Open", times = 6)  # Testing
+location_status = previous_status
+
+# Check to see if the status at ANY beach has been changed since last check
+refresh_status = any(previous_status != location_status)
+
+if (refresh_status) {
+  # Concatinate location + status
+  # Collapse into one string (a tweet) with "\n" newline characters
+  location_status = paste(location_names, location_status, sep = ":")
+  status_tweet = paste(location_status, collapse = "\n", sep = "")
+} else {
+  status_tweet = "No status update"
+}
+
+# Write vector with beach status to log file
+write(x = location_status, file = "./data/location_status.out", sep = "\n")
+
 
 
 #

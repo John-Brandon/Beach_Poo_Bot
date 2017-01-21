@@ -1,4 +1,4 @@
-# ScrapeWebData.R
+# ScrapePoo.R
 # Author:     John R. Brandon, PhD
 # Purpose:    Scrape water quality data (coliform levels) from SF Water Power
 #             Sewer website
@@ -30,7 +30,7 @@
 #
 # Copyright 2016 John R. Brandon
 # This program is distributed under the terms of the GNU General Public License v3
-# (provided in the LICENSE file).
+# (provided in the LICENSE file of this repository).
 #
 library(ggplot2)   # Plotting
 library(magrittr)  # For pipes, e.g. %>%
@@ -121,7 +121,7 @@ if (ymd_sample_date != ymd(LastDate)) {
   # ggplotting -------------------------------------------------------------------
   # Source R code from JB's GitHub for ggplotting with `mytheme_bw`
   # Use package devtools to load plot theme code with `source_gist`
-  source_gist(id = "484d152675507dd145fe", sha1 = "eeb0f128acc6c50115a518ac0bda12800023484b")
+  source_gist(id = "484d152675507dd145fe", filename = "mytheme_bw.R")
 
   plt = ggplot(data = lincoln, aes(x = SAMPLE_DATE, y = DATA)) +
     geom_line(size = 1.25) + geom_point(size = 3.0) + mytheme_bw +
@@ -137,15 +137,14 @@ if (ymd_sample_date != ymd(LastDate)) {
   #
   # Create text for tweet --------------------------------------------------------
   #
-  tweet_text = paste("Sample Date: ", sample_date, sep = "")
-  tweet_text = paste(tweet_text, "; ", sample_location, sep = "")
-  tweet_text = paste(tweet_text, "; ",
-                     lincoln_poo, " parts E. coli per 100 mL.", sep = "")
+  tweet_text = paste("Sample Date: ", sample_date, "\n", sep = "")
+  tweet_text = paste(tweet_text, sample_location, "\n", sep = "")
+  tweet_text = paste(tweet_text, lincoln_poo, " parts E. coli per 100 mL.", "\n", sep = "")
 
   # Add text to tweet based on boolean assessment of whether at alert levels.
-  if(lincoln_poo >= 400){
-    tweet_text = paste("ALERT -- OCEAN BEACH LIKELY POSTED AS CLOSED -- ", tweet_text, sep = "")
-  }else{
-    tweet_text = paste(tweet_text, "; ", "Counts are less than 400 parts per 100 ml.", sep = "")
-  }
+  # if(lincoln_poo >= 400){
+  #   tweet_text = paste("ALERT -- OCEAN BEACH LIKELY POSTED AS CLOSED -- ", "\n", tweet_text, sep = "")
+  # }else{
+  #   tweet_text = paste(tweet_text, "; ", "Counts are less than 400 parts per 100 ml.", sep = "")
+  # }
 }
