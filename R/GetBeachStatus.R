@@ -87,7 +87,7 @@ location_names = names(location_urls)
 # Scrape status "Posted" or "Open" for each location ---------------------------
 # Uses `purrr` package and map function.
 # Mapping parallel elements of vector arguments to the function get_beach_status.
-location_status = map2_chr(location_names, location_urls, get_beach_status) %>%
+location_status = map2_chr(location_names, location_urls, .f = get_beach_status) %>%
   gsub(x = ., pattern = "^.", replacement = "")  # Remove leading blank spaces
 
 # Scrape Sewer Overflow Status -------------------------------------------------
@@ -109,20 +109,8 @@ if (refresh_status) {
     paste(location_names, ., sep = ": ") %>%  # add location name
     paste(collapse = "\n")                    # new line between locations
 } else {
-  status_tweet = "No status update"
+  status_tweet = "The latest sample has not changed the posting status at Lincoln Way."
 }
 
 # Write vector with each beach status to log file
 write(x = poo_status, file = "./data/location_status.out", sep = "\n")
-
-# tweet("Testing")
-# tweet(status_tweet)
-
-# # Split tweet in two if over 140 character limit
-# tweet_nchar = nchar(status_tweet)  # really, we want to subtract emoji unicode from this
-# if(tweet_nchar > 140){
-#
-# }else{
-#
-# }
-

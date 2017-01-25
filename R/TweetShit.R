@@ -54,7 +54,7 @@ if(sample_updated){
 # The condition above re: updated counts is currently only enforced for Ocean Beach at Lincoln Way
 # If the status of ANY of the beaches on file (eg Sloat or Chrissie Field) has changed,
 # want to send a tweet with the status list, but not the tweet with counts at Lincoln (which are old)
-if(status_tweet != "No status update" & sample_updated == FALSE){
+if(status_tweet != "The latest sample has not changed the posting status at Lincoln Way." & sample_updated == FALSE){
   tweet(status_tweet)
 }
 
