@@ -8,6 +8,10 @@ library(emojifont)  # Helper emoji functions
 library(tidyverse)  # For Pipes %>% in R
 
 # Create a list of possible emojis in unicode
+eyes_emoji_uni = emoji("eyes")
+
+hot_emoji_uni = emoji('hotsprings')
+
 microscope_emoji_uni = search_emoji('microscope') %>%
   unique() %>%
   emoji()
