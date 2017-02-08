@@ -65,7 +65,7 @@ set_emoji = function(status){
   }else if(status == "Posted"){
     emoj = warning_emoji_uni # red_circle_emoji_uni
   }else{  # "Sewer Overflow"
-    emoj = paste(warning_emoji_uni, skull_emoji_uni, bangbang_emoji_uni)
+    emoj = paste(bangbang_emoji_uni, skull_emoji_uni, bangbang_emoji_uni)  #
   }
   paste(status, emoj, sep = "")  # Add corresponding emoji unicode to end of line
 }
@@ -77,8 +77,9 @@ location_urls = c(
   Balboa = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4604",
   # "China Beach" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4607"
   "Baker Beach W" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4608",
-  "Crissy Field W" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4611"
+  "Crissy Field W" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4611",
   # "Crissy Field E" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4612"
+  "Aquatic Park" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4613"
 )
 
 # Create vector of sampling location names
@@ -110,6 +111,19 @@ if (refresh_status) {
     paste(collapse = "\n")                    # new line between locations
 } else {
   status_tweet = "The latest sample has not changed the posting status at Lincoln Way."
+  # Insert list with posting status here (eg. "Lincoln: Open" "Balboa: Open" "Sloat: Open")
+}
+
+#
+# Check to see if tweet > 140 characters. Split if too long. -------------------
+#
+if (nchar(status_tweet) > 140){
+  # If all sampling sites have sewer overflow, there are too many characters.
+  # Split into two strings for tweeting.
+  status_tweet %<>% strsplit(split = "Baker Beach") %>% unlist()
+
+  # Replace text that was destroyed by the strsplit function.
+  status_tweet[2] = paste("Baker Beach", status_tweet[2], sep = "")
 }
 
 # Write vector with each beach status to log file
