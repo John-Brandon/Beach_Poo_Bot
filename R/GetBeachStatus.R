@@ -49,13 +49,13 @@ check_sewer_status = function(url){
     unlist()  # return vector
 }
 
-merge_statuses = function(sew_status, loc_status){
+merge_statuses = function(sewer_status, loc_status){
   # If not "Combined Sewer Overflow" status,
   # replace with location "Posted" or "Open" status
-  if(is.na(sew_status)){
-    sew_status = loc_status
+  if(is.na(sewer_status)){
+    sewer_status = loc_status
   }
-  sew_status  # return
+  sewer_status  # return
 }
 
 set_emoji = function(status){
@@ -97,14 +97,18 @@ poo_status = map_chr(location_urls, check_sewer_status) %>%  # Scrape sewer stat
   gsub(x =., pattern = "Combined ", replacement = "", fixed = FALSE) %>%  # Edit string
   map2_chr(., location_status, merge_statuses)  # Fill out statuses
 
+# Check to see if status changed at ANY beach since last run -------------------
+
 # Read vector with previous beach status from log file
 previous_status = readLines("./data/location_status.out")
 
-# Check to see if the status at ANY beach has been changed since last check
+# Determine if updated status
 refresh_status = any(previous_status != poo_status)
 if (refresh_status) {
-  # Concatinate location + status
-  # Collapse into one string (a tweet) with "\n" newline characters
+  # If status updated:
+  # Concatinate location + status,
+  # Collapse into a single string,
+  # Add "\n" newline characters to format as a tweet.
   status_tweet = poo_status %>%
     map_chr(set_emoji) %>%  # add corresponding emoji
     paste(location_names, ., sep = ": ") %>%  # add location name
