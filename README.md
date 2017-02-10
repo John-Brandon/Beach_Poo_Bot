@@ -10,18 +10,20 @@ As a surfer, I check ocean conditions regularly. The motivation for this project
 
 Fortunately, the <a href="http://sfwater.org/index.aspx?page=67" tarte="_blank">San Francisco Public Utilities Commission</a>  has a great website that includes <a href="http://sfwater.org/cfapps/lims/beachmain1.cfm" target="_blank">a regularly updated map.</a> They are also hip to the value of open source. Regularly updated coliform bacteria count data are made available to citizens of our planet, and for all we know, to aliens from higher dimensions.    
 
-So, if you're lazy like me and don't want to open new tabs in you browser, you develop a helper bot: <a href="https://twitter.com/BeachPooBot" target="_blank">@BeachPooBot</a> was born into the wild on 2016-03-19 14:05:37 (local time), in Pacifica, CA. It has been processing publically available data files daily since then -- tweeting fecal counts, as they are updated, for Ocean Beach, San Francisco. 
+Nevertheless, if you're lazy like me and already have too many tabs open in you browser, you develop a helper bot to automatically relay conditions: <a href="https://twitter.com/BeachPooBot" target="_blank">@BeachPooBot</a> was born into the wild on 2016-03-19 14:05:37 (local time), in Pacifica, CA. It has been processing publically available data files daily since then -- tweeting fecal counts, as they are updated, for Ocean Beach, San Francisco. 
 
-At this stage in Poo Bot's life cycle, the project's following has expanded to include a diverse set of beach recreationalists, others interested generally in water quality, and even at one point, 'Ангелина' the sexy spam bot.   
+At this stage in Poo Bot's life cycle, the Twitter account's following has expanded to include a diverse set of beach recreationalists, others interested generally in water quality, and even at one point, 'Ангелина' the sexy spam bot.    
 
-For a recent raw data set, dating back to 2015-12-21, see the time series of `*.csv` files in BeachPooBot's data directory. This data contains all available sampling locations including those in SF Bay. If you'd like to see an improvement in the project, let me know via twitter, or better yet submit a pull request with contributed code! 
+If you'd like to see an improvement in the project, let me know @BeachPooBot via Twitter, or better yet submit a pull request with contributed code! 
 
 <a href="http://www.cdph.ca.gov/HealthInfo/environhealth/water/Pages/Beaches.aspx" target="_blank">Regulations for public beaches and ocean water-contact sports areas are available from the California Department of Public Health.</a>  
 
 For the latest status of SFOB shoreline sampling locations, please refer to the y$<a href="http://www.sfwater.org/cfapps/lims/beachmain1.cfm" target="_blank">SF Beach Water Quality map.</a> 
 
 ### Technical details :ocean:
-This TwitterBot downloads and processes San Francisco Bay and Ocean Beach water quality data from the SF Water Power Sewer web server. It does this twice a day, at 0700 and 1500 hrs (Pacific Time).
+This TwitterBot downloads and processes San Francisco Bay and Ocean Beach water quality data from the SF Water Power Sewer web server. It does this twice a day, at 1000 and 1400 hrs (Pacific Time).
+
+For a recent raw data set, dating back to 2015-12-21, see the time series of `*.csv` files in BeachPooBot's data directory. This data contains all available sampling locations including those in SF Bay.
 
 After downloading the data, the bot compares the latest sample time-date with that from the previous download, and thus determines if a new sample has been posted. 
 
@@ -31,7 +33,7 @@ The main code for the bot is written in `R`. See the code files for additional c
 
 The program can be scripted in Bash by executing `./R/rShellScript.sh` To replicate this, you would need to edit the `*.sh` file to include your paths.   
 
-Currently, the bot is automated using a `*.plist` file running on JB's laptop (Mac OS 10.11.6). The `*.plist` file is written in `XML`. It is stored under the global Launch Agent directory, i.e. `/Library/LaunchAgents/com.rTask.plist`. The `XML` for that file is shown below:
+Currently, the bot is automated using a `*.plist` file running on JB's laptop (Mac OS 10.11.6). The `*.plist` file is written in `XML`. It is stored under the global Launch Agent directory, i.e. `/Library/LaunchAgents/com.rTask.plist`. Example `XML` for that file is shown below:
 
 ```XML
 <?xml version="1.0" encoding="UTF-8"?>
