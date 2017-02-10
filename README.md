@@ -6,8 +6,8 @@
 ---
 
 ### Bio :umbrella:
-As a surfer, I check ocean conditions regularly. The motivation for this project started when I found no automated e-system to receive updates on water quality for San Francisco's beaches. Fortunately, the <a href="http://sfwater.org/index.aspx?page=67" tarte="_blank">San Francisco Public Utilities Commission</a>  has a great website that includes <a href="http://sfwater.org/index.aspx?page=67" target="_blank">a regularly updated map.</a> They are also hip to the value of open source
-and host sampling data for citizens of our planet, and for all we know, even aliens from other dimensions to download.    
+As a surfer, I check ocean conditions regularly. The motivation for this project started when I found no automated e-system to receive updates on water quality for San Francisco's beaches. Fortunately, the <a href="http://sfwater.org/index.aspx?page=67" tarte="_blank">San Francisco Public Utilities Commission</a>  has a great website that includes <a href="http://sfwater.org/cfapps/lims/beachmain1.cfm" target="_blank">a regularly updated map.</a> They are also hip to the value of open
+source. Sampling data is posted for citizens of our planet, and for all we know, even aliens from other dimensions to download.    
 
 If you're lazy like me and don't want to open the 1e3+1th tab in you browser, you develop a helper bot. <a href="https://twitter.com/BeachPooBot" target="_blank">@BeachPooBot</a> was born into the wild on 2016-03-19 14:05:37 (local time), in Pacifica, CA. It has been processing publically available data files daily since then -- tweeting fecal counts, as they are updated, for Ocean Beach, San Francisco. 
 
