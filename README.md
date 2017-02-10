@@ -18,7 +18,7 @@ If you'd like to see an improvement in the project, let me know @BeachPooBot via
 
 <a href="http://www.cdph.ca.gov/HealthInfo/environhealth/water/Pages/Beaches.aspx" target="_blank">Regulations for public beaches and ocean water-contact sports areas are available from the California Department of Public Health.</a>  
 
-For the latest status of SFOB shoreline sampling locations, please refer to the y$<a href="http://www.sfwater.org/cfapps/lims/beachmain1.cfm" target="_blank">SF Beach Water Quality map.</a> 
+For the latest status of SFOB shoreline sampling locations, please refer to the <a href="http://www.sfwater.org/cfapps/lims/beachmain1.cfm" target="_blank">SF Beach Water Quality map.</a> 
 
 ### Technical details :ocean:
 This TwitterBot downloads and processes San Francisco Bay and Ocean Beach water quality data from the SF Water Power Sewer web server. It does this twice a day, at 1000 and 1400 hrs (Pacific Time).
