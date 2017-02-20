@@ -17,6 +17,7 @@
 library(rvest)  # Web scraping
 library(purrr)  # Map along vector(s) of inputs to function calls (split-apply-combine)
 library(tidyverse)  # Includes pipes %>% in R
+library(magrittr)   # Bi-directional pipes %<>%
 
 source("./R/Emoji_unicode.R")  # Returns a set of emoji unicode
 
@@ -72,14 +73,18 @@ set_emoji = function(status){
 
 # Create vector of sampling location URLs --------------------------------------
 location_urls = c(
+  "Ft. Funston" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4601",
   Sloat = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4602",
   Lincoln = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4605",
   Balboa = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4604",
-  # "China Beach" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4607"
-  "Baker Beach W" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4608",
-  "Crissy Field W" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4611",
-  # "Crissy Field E" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4612"
-  "Aquatic Park" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4613"
+  "China Bch" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4607",
+  "Baker Bch W" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4608",
+  "Crissy Fld W" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4611",
+  "Crissy Fld E" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4612",
+  "Aquatic P" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4613",
+  "Mission Crk" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4618",
+  "Islais Crk" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4619",
+  "Windsurfer Cir" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4616"
 )
 
 # Create vector of sampling location names
@@ -123,11 +128,20 @@ if (refresh_status) {
 #
 if (nchar(status_tweet) > 140){
   # If all sampling sites have sewer overflow, there are too many characters.
-  # Split into two strings for tweeting.
-  status_tweet %<>% strsplit(split = "Baker Beach") %>% unlist()
+  # As sampling locations have been added to the list, the status text will likely be > 140 regardless.
+  # So, split into multiple strings (each with four sampling locations) for tweeting.
+
+  # First split. Returns a character vector with two string elements.
+  status_tweet %<>% strsplit(x = ., split = c("China Bch"), fixed = TRUE) %>% unlist()
 
   # Replace text that was destroyed by the strsplit function.
-  status_tweet[2] = paste("Baker Beach", status_tweet[2], sep = "")
+  status_tweet[2] = paste("China Bch", status_tweet[2], sep = "")
+
+  # Second split
+  status_tweet %<>% strsplit(x = ., split = c("Aquatic P"), fixed = TRUE) %>% unlist()
+
+  # Replace text that was destroyed by the strsplit function.
+  status_tweet[3] = paste("Aquatic P", status_tweet[3], sep = "")
 }
 
 # Write vector with each beach status to log file
