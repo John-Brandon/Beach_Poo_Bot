@@ -142,6 +142,12 @@ if (nchar(status_tweet) > 140){
 
   # Replace text that was destroyed by the strsplit function.
   status_tweet[3] = paste("Aquatic P", status_tweet[3], sep = "")
+
+  # Re-order the vector to tweet locations in order read from the ocean to the bay
+  tmp_status = status_tweet
+  tmp_status[3] = status_tweet[1]
+  tmp_status[1] = status_tweet[3]
+  status_tweet = tmp_status
 }
 
 # Write vector with each beach status to log file
