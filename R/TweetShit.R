@@ -22,17 +22,17 @@ source("./R/ScrapePoo.R")
 source("./R/GetBeachStatus.R")
 
 # Credentials ------------------------------------------------------------------
-# Consumer Key (API Key)	wOGaeEQzlUbYZW2iagxgY8IOH
-api_key = "wOGaeEQzlUbYZW2iagxgY8IOH"
+# Consumer Key (API Key)
+api_key = "Your Consumer Key Here"
 
-# Consumer Secret (API Secret)	hnIHppfM1mvbHqs8S1UnaeZU0OFHI7F2xVwGYOe8hGBRnIApG6
-api_secret = "hnIHppfM1mvbHqs8S1UnaeZU0OFHI7F2xVwGYOe8hGBRnIApG6"
+# Consumer Secret (API Secret)
+api_secret = "Your Consumer Secret Here"
 
-# Access Token	710199368561860608-7PSV44DgI7Io4rgd3cbcis9ykRMVUbz
-access_token = "710199368561860608-7PSV44DgI7Io4rgd3cbcis9ykRMVUbz"
+# Access Token
+access_token = "Your Access Token Here"
 
-# Access Token Secret	ctrg9lKQ3dxqfFSdlnNqeybZqjQy3GZd2dhf9C7jKKaMU
-access_secret = "ctrg9lKQ3dxqfFSdlnNqeybZqjQy3GZd2dhf9C7jKKaMU"
+# Access Token Secret
+access_secret = "Your Access Token Secret Here"
 
 # Set up OAuth credentials for a twitteR session -------------------------------
 setup_twitter_oauth(consumer_key = api_key,
