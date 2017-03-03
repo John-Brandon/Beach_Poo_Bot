@@ -6,7 +6,7 @@
 ---
 
 ### Bio :umbrella:
-As a human, I check ocean conditions regularly. The motivation for this project started when I found no automated e-system to receive updates on water quality for San Francisco's beaches. 
+I check ocean and surf conditions regularly. The motivation for this project started when I found no automated e-system to receive updates on water quality for San Francisco's beaches. 
 
 Fortunately, the <a href="http://sfwater.org/index.aspx?page=67" tarte="_blank">San Francisco Public Utilities Commission</a>  has a great website that includes <a href="http://sfwater.org/cfapps/lims/beachmain1.cfm" target="_blank">a regularly updated map.</a> They are also hip to the value of open source. Regularly updated coliform bacteria count data are made available to citizens of our planet (and for all we know, to aliens from higher dimensions).    
 
