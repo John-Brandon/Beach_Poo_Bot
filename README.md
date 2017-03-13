@@ -13,10 +13,10 @@ Fortunately, the <a href="http://sfwater.org/index.aspx?page=67" tarte="_blank">
 Nevertheless, if you're lazy like me and already have too many tabs open in you browser, you develop a helper bot to automatically relay updated conditions: <a href="https://twitter.com/BeachPooBot" target="_blank">@BeachPooBot</a> was born into the wild on 2016-03-19 14:05:37 (local time), in Pacifica, CA. It has been processing publically available data files daily since then -- tweeting fecal counts, as they are updated, for Ocean Beach, San Francisco. 
 
 At this stage in Poo Bot's life cycle, the Twitter account's following has expanded to
-more than 100 accounts. These followers include a diverse set of beach recreationalists, a
-local government agency @SFWater, conservation groups, others interested generally in
+more than 100 accounts. These followers include a diverse set of beach recreationalists, a relavent
+local government agency <a href="https://twitter.com/SFWater" target="_blank">@SFWater</a>, non governmental conservation groups like <a href="https://twitter.com/SFBaykeeper" target="_blank">@SFBaykeeper</a>, others interested generally in
 water quality, and even at one point, 'Ангелина' the sexy spam bot (had to report that
-one, and lose a follower, sorry not sorry, 'Angelina', but our relationship was fatefully never meant to be).     
+one, and lose a follower. Sorry not sorry, 'Angelina').     
 
 If you'd like to see an improvement in the project, reach out to @BeachPooBot via Twitter, or better yet submit a pull request through GitHub to collaborate on the code or other files! 
 
