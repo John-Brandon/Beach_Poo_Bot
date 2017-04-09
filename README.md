@@ -31,8 +31,8 @@ For a recent raw data set, dating back to 2015-12-21, see the time series of `*.
 
 After downloading the data, the bot compares the latest sample time-date with that from the previous download, and thus determines if a new sample has been posted. 
 
-If a new sample has been posted, the bot tweets updated data for Ocean Beach at Lincoln Way (i.e. *E. coli* counts per 100ml). A second tweet is also sent with the "Open" or "Posted" status for sampling locations along Ocean Beach and into the mouth of SF Bay. The bot does not tweet if no new samples have been posted.
-
+If a new sample has been posted, the bot tweets updated data for Ocean Beach at Lincoln Way (i.e. *E. coli* counts per 100ml). A second tweet is also sent with the "Open" or "Posted" status for sampling locations along Ocean Beach and into the mouth of SF Bay. The bot does not tweet if no new samples have been postedi (*i.e.* the bot works quietly in the background until it detects a status update).
+ 
 The main code for the bot is written in `R`. See the code files for additional comments and details: `./R/ScrapePoo.R` (data processing); `./R/GetBeachStatus.R` (web-scraping)  and `./R/TweetShit.R` (to interface with Twitter's API).  
 
 The program can be scripted in Bash by executing `./R/rShellScript.sh` To replicate this, you would need to edit the `*.sh` file to include your paths.   
