@@ -18,7 +18,7 @@ local government agency <a href="https://twitter.com/SFWater" target="_blank">@S
 water quality, and even at one point, 'Ангелина' the sexy spam bot (had to report that
 one, and lose a follower. Sorry not sorry, 'Angelina').     
 
-If you'd like to see an improvement in the project, reach out to @BeachPooBot via Twitter, or better yet submit a pull request through GitHub to collaborate on the code or other files! 
+Technical background is outlined below. If you'd like to see an improvement in the project, reach out to @BeachPooBot via Twitter, or better yet submit a pull request through GitHub to collaborate on the code or other files! 
 
 <a href="http://www.cdph.ca.gov/HealthInfo/environhealth/water/Pages/Beaches.aspx" target="_blank">Regulations for public beaches and ocean water-contact sports areas are available from the California Department of Public Health.</a>  
 
