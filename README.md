@@ -31,13 +31,13 @@ This TwitterBot downloads and processes San Francisco Bay and Ocean Beach water 
 data are updated on the server. 
 
 For a recent raw data set, dating back to 2015-12-21, see the time series of `*.csv` files in BeachPooBot's data directory. This data contains all available sampling locations including several beaches that are currently included in the Poo Bot's
-'tweet on update' list. The list of locations that Poo Bot checks is determined in part by follower feedback and requests on Twitter. The original list contained popular surfing locations along Ocean Beach, and has been expanded to include beaches
-popular with kite-boarders and that bunch of crazy impressive SF Bay swimmers.
+'tweet on update' list. The list of locations that Poo Bot checks is determined in part by follower feedback and requests on Twitter. The original list contained several surfing locations along Ocean Beach, and has been expanded to include areas inside the bay that are
+popular with kite-boarders and that bunch of crazy-impressive SF Bay swimmers.
 
 After downloading the full data set, the bot compares the latest sample time-date with that from the previous download, and thus determines if a new sample has been posted. 
 
 If a new sample has been posted, the bot wrangles the data: filtering by location; compiling *E.coli* counts; scraping SF Bay Water websites to extract the posting status of beaches from HTML (*e.g.* "Sewer Overflow"); composes tweets
-with updated coliform bacteria counts + beach status descriptions and their corresponding emoji symbols --> [Sewer Overflow :bangbang: :skull: :bangbang:]
+with updated coliform bacteria counts + beach status descriptions and their corresponding emoji symbols --> Sewer Overflow :bangbang: :skull: :bangbang:
 
 The bot then logs-in through the Twitter API to tweet updated *E.coli* counts per 100ml for Ocean Beach at Lincoln Way. A second tweet is also sent if there have been any updates to the posting status of the filtered set of sampling locations along Ocean Beach and into the mouth
 of SF Bay. The bot does not tweet if no new samples have been posted; it runs quietly in the background until it detects a status update.
