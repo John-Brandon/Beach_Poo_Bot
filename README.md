@@ -25,7 +25,9 @@ Technical background is outlined below. If you'd like to see an improvement in t
 
 For the latest status of SFOB shoreline sampling locations, please refer to the <a href="http://www.sfwater.org/cfapps/lims/beachmain1.cfm" target="_blank">SF Beach Water Quality map.</a> 
 
-### Technical details :ocean: This TwitterBot downloads and processes San Francisco Bay and Ocean Beach water quality data from the SF Water Power Sewer web server. It does this twice a day --- at 1015 and 1415 hrs (Pacific Time) --- 15 min after
+### Technical details :ocean: 
+
+This TwitterBot downloads and processes San Francisco Bay and Ocean Beach water quality data from the SF Water Power Sewer web server. It does this twice a day --- at 1015 and 1415 hrs (Pacific Time) --- 15 min after
 data are updated on the server. 
 
 For a recent raw data set, dating back to 2015-12-21, see the time series of `*.csv` files in BeachPooBot's data directory. This data contains all available sampling locations including several beaches that are currently included in the Poo Bot's
@@ -34,10 +36,11 @@ popular with kite-boarders and that bunch of crazy impressive SF Bay swimmers.
 
 After downloading the full data set, the bot compares the latest sample time-date with that from the previous download, and thus determines if a new sample has been posted. 
 
-If a new sample has been posted, the bot executes code to wrangle the data: it filters by location and compiles *E.coli* counts; scrapes various SF Bay Water websites to extract beach posting status (*e.g.* sewer overflow) from HTML; composes strings
-with updated numbers, status descriptions and corresponding emoji symbols [:bangbang: :skull: :bangbang: Sewer Overflow *vs* Warning :warning:]
-the Twitter API to tweets updated data for Ocean Beach at Lincoln Way (i.e. *E. coli* counts per 100ml). A second tweet is also sent with the "Open" or "Posted" status for sampling locations along Ocean Beach and into the mouth
-of SF Bay. The bot does not tweet if no new samples have been postedi (*i.e.* the bot works quietly in the background until it detects a status update).
+If a new sample has been posted, the bot wrangles the data: filters by location and compiles *E.coli* counts; scrapes SF Bay Water websites to extract the posting (*e.g.* "Sewer Overflow") status of beaches from HTML; composes strings
+with updated coliform bacteria counts, beach status descriptions and corresponding emoji symbols [:bangbang: :skull: :bangbang: Sewer Overflow *vs* Warning :warning:]
+
+The bot then logs in through the Twitter API to tweet updated *E.coli* counts per 100ml for Ocean Beach at Lincoln Way. A second tweet is also sent with the "Open" or "Posted" status for sampling locations along Ocean Beach and into the mouth
+of SF Bay. The bot does not tweet if no new samples have been posted; it runs quietly in the background until it detects a status update.
  
 The main code for the bot is written in `R`. See the code files for additional comments and details. In brief, the main files (and duties) are: `./R/ScrapePoo.R` (data processing); `./R/GetBeachStatus.R` (web-scraping)  and `./R/TweetShit.R` (to interface with Twitter's API).  
 
