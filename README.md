@@ -36,17 +36,17 @@ popular with kite-boarders and that bunch of crazy impressive SF Bay swimmers.
 
 After downloading the full data set, the bot compares the latest sample time-date with that from the previous download, and thus determines if a new sample has been posted. 
 
-If a new sample has been posted, the bot wrangles the data: filters by location and compiles *E.coli* counts; scrapes SF Bay Water websites to extract the posting (*e.g.* "Sewer Overflow") status of beaches from HTML; composes strings
-with updated coliform bacteria counts, beach status descriptions and corresponding emoji symbols [:bangbang: :skull: :bangbang: Sewer Overflow *vs* Warning :warning:]
+If a new sample has been posted, the bot wrangles the data: filtering by location; compiling *E.coli* counts; scraping SF Bay Water websites to extract the posting status of beaches from HTML (*e.g.* "Sewer Overflow"); composes tweets
+with updated coliform bacteria counts + beach status descriptions and their corresponding emoji symbols --> [Sewer Overflow :bangbang: :skull: :bangbang:]
 
-The bot then logs in through the Twitter API to tweet updated *E.coli* counts per 100ml for Ocean Beach at Lincoln Way. A second tweet is also sent with the "Open" or "Posted" status for sampling locations along Ocean Beach and into the mouth
+The bot then logs-in through the Twitter API to tweet updated *E.coli* counts per 100ml for Ocean Beach at Lincoln Way. A second tweet is also sent if there have been any updates to the posting status of the filtered set of sampling locations along Ocean Beach and into the mouth
 of SF Bay. The bot does not tweet if no new samples have been posted; it runs quietly in the background until it detects a status update.
  
-The main code for the bot is written in `R`. See the code files for additional comments and details. In brief, the main files (and duties) are: `./R/ScrapePoo.R` (data processing); `./R/GetBeachStatus.R` (web-scraping)  and `./R/TweetShit.R` (to interface with Twitter's API).  
+The main code for the bot is written in `R`. In brief, the main files (and duties) are: `./R/ScrapePoo.R` (data processing); `./R/GetBeachStatus.R` (web-scraping)  and `./R/TweetShit.R` (to interface with Twitter's API). Additional technical details are provided in the comments and function descriptions in the code files themselves.  
 
-The program can be scripted in Bash by executing `./R/rShellScript.sh` To replicate this, you would need to edit this script to include your paths.   
+The bot's program can be scripted in Bash by executing `./R/rShellScript.sh`. To replicate this, you would need to edit this script to include your paths.   
 
-Currently, the bot is automated using a `*.plist` file running on JB's laptop (Mac OS 10.11.6). The `*.plist` file is written in `XML`. It is stored under the global Launch Agent directory, i.e. `/Library/LaunchAgents/com.rTask.plist`.  Example `XML`
+Currently, the bot is automated according to parameters stored in a `*.plist` file running on JB's laptop (Mac OS 10.11.6). The `*.plist` file is written in `XML`. It is stored under the global Launch Agent directory, i.e. `/Library/LaunchAgents/com.rTask.plist`.  Example `XML`
 for that file is shown below:
 
 ```XML
