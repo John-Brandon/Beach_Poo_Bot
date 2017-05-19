@@ -8,9 +8,10 @@
 ### Bio :umbrella:
 I check ocean and surf conditions regularly. The motivation for this project started when I found no automated e-system to receive updates on water quality for San Francisco's beaches. 
 
-Fortunately, the <a href="http://sfwater.org/index.aspx?page=67" tarte="_blank">San Francisco Public Utilities Commission</a>  has a great website that includes <a href="http://sfwater.org/cfapps/lims/beachmain1.cfm" target="_blank">a regularly updated map.</a> They are also hip to the value of open source. Regularly updated coliform bacteria count data are made available to citizens of our planet (and for all we know, to aliens from higher dimensions).    
+Fortunately, the <a href="http://sfwater.org/index.aspx?page=67" tarte="_blank">San Francisco Public Utilities Commission</a>  has a great website that includes <a href="http://sfwater.org/cfapps/lims/beachmain1.cfm" target="_blank">a regularly updated map.</a> They are also hip to the value of open source. Regularly updated coliform bacteria count data are made available to the public. Which, as a first approximation in terms of internet users, is about one half of the 7.3 billion (or about 3.4e09) humans
+on this planet.
 
-Nevertheless, if you're lazy like me and already have too many tabs open in you browser, you develop a helper bot to automatically relay updated conditions: <a href="https://twitter.com/BeachPooBot" target="_blank">@BeachPooBot</a> was born into the wild on 2016-03-19 14:05:37 (local time), in Pacifica, CA. It has been processing publically available data files daily since then -- tweeting fecal counts, as they are updated, for Ocean Beach, San Francisco. 
+Nevertheless... If you're lazy like me and already have too many tabs open in you browser, you develop a helper bot to automatically relay updated conditions: <a href="https://twitter.com/BeachPooBot" target="_blank">@BeachPooBot</a> was born into the wild on 2016-03-19 14:05:37 (local time), in Pacifica, CA. It has been downloading and processing publically available data daily since then -- tweeting updated fecal counts and sewer overflow alerts for San Francisco. 
 
 At this stage in Poo Bot's life cycle, the Twitter account's following has expanded to
 more than 100 accounts. These followers include a diverse set of beach recreationalists, a relavent
@@ -25,7 +26,7 @@ Technical background is outlined below. If you'd like to see an improvement in t
 For the latest status of SFOB shoreline sampling locations, please refer to the <a href="http://www.sfwater.org/cfapps/lims/beachmain1.cfm" target="_blank">SF Beach Water Quality map.</a> 
 
 ### Technical details :ocean:
-This TwitterBot downloads and processes San Francisco Bay and Ocean Beach water quality data from the SF Water Power Sewer web server. It does this twice a day, at 1015 and 1415 hrs (Pacific Time). 
+This TwitterBot downloads and processes San Francisco Bay and Ocean Beach water quality data from the SF Water Power Sewer web server. It does this twice a day --- at 1015 and 1415 hrs (Pacific Time) --- 15 min after data are updated on the server. 
 
 For a recent raw data set, dating back to 2015-12-21, see the time series of `*.csv` files in BeachPooBot's data directory. This data contains all available sampling locations including those in SF Bay.
 
@@ -58,15 +59,15 @@ Currently, the bot is automated using a `*.plist` file running on JB's laptop (M
 	<array>
 		<dict>
 			<key>Hour</key>
-			<integer>7</integer>
+			<integer>10</integer>
 			<key>Minute</key>
-			<integer>0</integer>
+			<integer>15</integer>
 		</dict>
 		<dict>
 			<key>Hour</key>
-			<integer>15</integer>
+			<integer>14</integer>
 			<key>Minute</key>
-			<integer>0</integer>
+			<integer>15</integer>
 		</dict>
 	</array>
 </dict>
