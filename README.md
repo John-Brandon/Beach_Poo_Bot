@@ -9,8 +9,12 @@
 I check ocean and surf conditions regularly. The motivation for this project started when I found no automated e-system to receive updates on water quality for San Francisco's beaches. 
 
 Fortunately, the <a href="http://sfwater.org/index.aspx?page=67" tarte="_blank">San Francisco Public Utilities Commission</a>  has a great website that includes <a href="http://sfwater.org/cfapps/lims/beachmain1.cfm" target="_blank">a regularly
-updated map.</a> They are also hip to the value of open source. Regularly updated coliform bacteria count data are made available to the public. Which, as a first approximation in terms of internet users, is about one half of the 7.3 billion (or
-about 3.4e09) humans on this planet.
+updated map.</a> They are also hip to the value of open data. Regularly updated coliform bacteria count data are made available to the public in machine readable format for download. 
+
+<!--
+Which, as a first approximation in terms of internet users, is about one half of the 7.3 billion (or
+about 3.7e09) humans on this planet.
+-->
 
 Nevertheless... If you're lazy like me and already have too many tabs open in you browser, you develop a helper bot to automatically relay updated conditions: <a href="https://twitter.com/BeachPooBot" target="_blank">@BeachPooBot</a> was born into
 the wild on 2016-03-19 14:05:37 (local time), in Pacifica, CA. It has been downloading and processing publically available data daily since then -- tweeting updated fecal counts and sewer overflow alerts for San Francisco. 
