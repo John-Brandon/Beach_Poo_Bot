@@ -16,7 +16,7 @@ Which, as a first approximation in terms of internet users, is about one half of
 about 3.7e09) humans on this planet.
 -->
 
-Nevertheless... If you're lazy like me and already have too many tabs open in you browser, you develop a helper bot to automatically relay updated conditions: <a href="https://twitter.com/BeachPooBot" target="_blank">@BeachPooBot</a> was born into
+So... If you're lazy like me and already have too many tabs open in you browser, you develop a helper bot to automatically relay updated conditions: <a href="https://twitter.com/BeachPooBot" target="_blank">@BeachPooBot</a> was born into
 the wild on 2016-03-19 14:05:37 (local time), in Pacifica, CA. It has been downloading and processing publically available data daily since then -- tweeting updated fecal counts and sewer overflow alerts for San Francisco. 
 
 At this stage in Poo Bot's life cycle, the Twitter account's following has expanded to more than 100 accounts. These followers include a diverse set of beach recreationalists, a relavent local government agency <a href="https://twitter.com/SFWater"
