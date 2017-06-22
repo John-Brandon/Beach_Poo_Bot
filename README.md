@@ -19,6 +19,9 @@ about 3.7e09) humans on this planet.
 So... If you're lazy like me and already have too many tabs open in you browser, you develop a helper bot to automatically relay updated conditions: <a href="https://twitter.com/BeachPooBot" target="_blank">@BeachPooBot</a> was born into
 the wild on 2016-03-19 14:05:37 (local time), in Pacifica, CA. It has been downloading and processing publically available data daily since then -- tweeting updated fecal counts and sewer overflow alerts for San Francisco. 
 
+The list of locations that Poo Bot tweets is determined in part by follower feedback and requests on Twitter. The original list only contained several surfing locations along Ocean Beach, but has since been expanded to include areas inside the bay that are
+popular with kite-boarders and that bunch of crazy-impressive SF Bay swimmers.
+
 At this stage in Poo Bot's life cycle, the Twitter account's following has expanded to more than 100 accounts. These followers include a diverse set of beach recreationalists, a relavent local government agency <a href="https://twitter.com/SFWater"
 target="_blank">@SFWater</a>, non governmental conservation groups like <a href="https://twitter.com/SFBaykeeper" target="_blank">@SFBaykeeper</a>, others interested generally in water quality, and even at one point, 'Ангелина' the sexy spam bot (had
 to report that one, and lose a follower. Sorry not sorry, 'Angelina').     
@@ -34,9 +37,7 @@ For the latest status of SFOB shoreline sampling locations, please refer to the 
 This TwitterBot downloads and processes San Francisco Bay and Ocean Beach water quality data from the SF Water Power Sewer web server. It does this twice a day --- at 1015 and 1415 hrs (Pacific Time) --- 15 min after
 data are updated on the server. 
 
-For a recent raw data set, dating back to 2015-12-21, see the time series of `*.csv` files in BeachPooBot's data directory. This data contains all available sampling locations including several beaches that are currently included in the Poo Bot's
-'tweet on update' list. The list of locations that Poo Bot checks is determined in part by follower feedback and requests on Twitter. The original list contained several surfing locations along Ocean Beach, and has been expanded to include areas inside the bay that are
-popular with kite-boarders and that bunch of crazy-impressive SF Bay swimmers.
+For a recent raw data set, dating back to 2015-12-21, see the time series of `*.csv` files in BeachPooBot's data directory. This data contains all available SF sampling locations. 
 
 After downloading the full data set, the bot compares the latest sample time-date with that from the previous download, and thus determines if a new sample has been posted. 
 
