@@ -8,6 +8,7 @@ library(emojifont)  # Helper emoji functions
 library(tidyverse)  # For Pipes %>% in R
 
 # Create a list of possible emojis in unicode
+# emoji('warning')
 eyes_emoji_uni = emoji("eyes")
 
 hot_emoji_uni = emoji('hotsprings')
@@ -28,7 +29,7 @@ bangbang_emoji_uni = search_emoji('bangbang') %>%  # "!!" Seems to work with Twi
   unique() %>%
   emoji()
 
-skull_emoji_uni = search_emoji("skull") %>%
+skull_emoji_uni = search_emoji("skull_and_crossbones") %>%
   unique() %>%
   emoji()
 
