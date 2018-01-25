@@ -42,7 +42,7 @@ library(dplyr)     # For data wrangling
 #
 # Read Station ID keys from table ----------------------------------------------
 #
-station_key = read.csv("./data/station_key.csv", stringsAsFactors = FALSE)
+station_key = read.csv("./etc/station_key.csv", stringsAsFactors = FALSE)
 
 #
 # Download publically available data (*.csv) -----------------------------------
@@ -91,60 +91,88 @@ dat %<>% mutate(DATA = str_replace_all(DATA, "[^[:alnum:]]", ""),
 # are unintelligable.
 dat %<>% full_join(station_key, dat, by = "SOURCE")
 
-# Extract E.coli data from Lincoln Street
-lincoln = dat %>% filter(name == "Ocean Beach at Lincoln Way") %>%
-  filter(ANALYTE == "COLI_E")
+# Read locations to tweet from input file --------------------------------------
+#   and get number of locations in that list
+locs_to_tweet = readLines(con = "./etc/spots_to_tweet.txt")
 
-lincoln_poo = lincoln$DATA[1]                              # Most recent E.coli count per 100 ml
-sample_date = format(lincoln$SAMPLE_DATE[1], "%b %d, %Y")  # Most recent sample date, prettified
-sample_location = lincoln$name[1]
+# Group data by location(name)  ------------------------------------------------
+# Query only those locations in `locs_to_tweet`
+# Filter out only first row, which is the most recent sample
+# Eventually want to check dates for each location, such
+#   that only tweet if sample for given location is updated
+locs_dat = dat %>%
+  group_by(name) %>%
+  filter(name %in% locs_to_tweet,
+         ANALYTE == "COLI_E") %>%
+  slice(1) %>%
+  ungroup()
 
 #
-# Compare most recent sample date with Log file --------------------------------
+# Read last sample date(s) from log file ---------------------------------------
 #
 LogDateFile = "LastSampleDate.txt"
 if(file.exists(LogDateFile)) {
-  LastDate = scan(file = LogDateFile, nlines = 1, what = "character")
+  last_date = read_csv(file = LogDateFile, col_names = c('last_date', 'name'))
 }
 
-ymd_sample_date = mdy(sample_date)  # Coerce to class POSIXct (format: YYYY-MM-DD)
+date_dat = locs_dat %>%
+  left_join(last_date, by = 'name') %>%
+  mutate(updated = ifelse(SAMPLE_DATE > last_date, TRUE, FALSE))
 
-# If previously logged date is not equal to most recent date, continue processing
-if (ymd_sample_date != ymd(LastDate)) {
-  #
-  # Log most recent sample date --------------------------------------------------
-  #
-  write.table(ymd_sample_date, file = LogDateFile,
-              row.names = FALSE, col.names = FALSE) # , quote = FALSE
-
-  #
-  # ggplotting -------------------------------------------------------------------
-  # Source R code from JB's GitHub for ggplotting with `mytheme_bw`
-  # Use package devtools to load plot theme code with `source_gist`
-  source_gist(id = "484d152675507dd145fe", filename = "mytheme_bw.R")
-
-  plt = ggplot(data = lincoln, aes(x = SAMPLE_DATE, y = DATA)) +
-    geom_line(size = 1.25) + geom_point(size = 3.0) + mytheme_bw +
-    labs(x ="Date", y = expression(italic("E. Coli  ")*"per 100 mL")) +
-    ggtitle(paste(lincoln$name[1], sample_date, sep =": ")) +
-    geom_hline(yintercept = 400, col = "red", lty = 2, size = 1.25)
-
-  # Save time series plot to file
-  string_today = as.character(today())  # Date stamp for file name
-  plt_file_name = paste("timeseries_", string_today, ".png", sep = "")
-  ggsave(filename = plt_file_name, plot = plt, device = "png")  # Save plot to file
-
-  #
-  # Create text for tweet --------------------------------------------------------
-  #
-  tweet_text = paste("Sample Date: ", sample_date, "\n", sep = "")
-  tweet_text = paste(tweet_text, sample_location, "\n", sep = "")
-  tweet_text = paste(tweet_text, lincoln_poo, " parts E. coli per 100 mL.", "\n", sep = "")
-
-  # Add text to tweet based on boolean assessment of whether at alert levels.
-  # if(lincoln_poo >= 400){
-  #   tweet_text = paste("ALERT -- OCEAN BEACH LIKELY POSTED AS CLOSED -- ", "\n", tweet_text, sep = "")
-  # }else{
-  #   tweet_text = paste(tweet_text, "; ", "Counts are less than 400 parts per 100 ml.", sep = "")
-  # }
+#
+# Create text for tweet ------------------------------------------------------
+#
+compose_tweet = function(sample_location, spot_count, sample_date){
+  # Given sampling data for a location, compose and format a tweet
+  paste0(sample_location, "\n",
+         spot_count, " parts E. coli per 100 mL.", "\n",
+         "Sample Date: ", sample_date)
 }
+# create vector with tweet of 'E.coli' levels for each location in `locs_to_tweet`
+# note: can get NA values for `updated` here if number of `locs_to_tweet` increased
+all_tweets = date_dat %>%
+  filter(updated == TRUE | is.na(updated)) %>%
+  mutate(tweet_txt = compose_tweet(sample_location = name,
+                                   spot_count = DATA,
+                                   sample_date = format(SAMPLE_DATE, '%b %d, %Y'))) %>%
+  pull(tweet_txt)
+
+#
+# Send any and all tweets ------------------------------------------------------
+#
+if(length(all_tweets) > 0)
+  map(.x = all_tweets, .f = twitteR::tweet)
+
+#
+# Log most recent sample date ------------------------------------------------
+#
+locs_dat %>%
+  select(SAMPLE_DATE, name) %>%
+  write_csv(x = ., path = LogDateFile, col_names = FALSE)
+
+#
+# ggplotting -----------------------------------------------------------------
+# Source R code from JB's GitHub for ggplotting with `mytheme_bw`
+# Use package devtools to load plot theme code with `source_gist`
+#
+# source_gist(id = "484d152675507dd145fe", filename = "mytheme_bw.R")
+#
+# plt = ggplot(data = lincoln, aes(x = SAMPLE_DATE, y = DATA)) +
+#   geom_line(size = 1.25) + geom_point(size = 3.0) + mytheme_bw +
+#   labs(x ="Date", y = expression(italic("E. Coli  ")*"per 100 mL")) +
+#   ggtitle(paste(lincoln$name[1], sample_date, sep =": ")) +
+#   geom_hline(yintercept = 400, col = "red", lty = 2, size = 1.25)
+#
+# # Save time series plot to file
+# string_today = as.character(today())  # Date stamp for file name
+# plt_file_name = paste("timeseries_", string_today, ".png", sep = "")
+# ggsave(filename = plt_file_name, plot = plt, device = "png")  # Save plot to file
+
+
+# Add text to tweet based on boolean assessment of whether at alert levels.
+# if(lincoln_poo >= 400){
+#   tweet_text = paste("ALERT -- OCEAN BEACH LIKELY POSTED AS CLOSED -- ", "\n", tweet_text, sep = "")
+# }else{
+#   tweet_text = paste(tweet_text, "; ", "Counts are less than 400 parts per 100 ml.", sep = "")
+# }
+
