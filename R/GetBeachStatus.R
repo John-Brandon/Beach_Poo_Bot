@@ -1,3 +1,4 @@
+# Code overview ----------------------------------------------------------------
 # GetBeachStatus.R
 #
 # Tasks:
@@ -13,9 +14,8 @@
 # Copyright 2016 John R. Brandon
 # This program is distributed under the terms of the GNU General Public License v3
 # (provided in the LICENSE file of this repository).
-# ----------------------------------------------------------------------
-library(rvest)  # Web scraping
-library(purrr)  # Map along vector(s) of inputs to function calls (split-apply-combine)
+library(rvest)      # Web scraping
+library(purrr)      # Map along vector(s) of inputs to function calls (split-apply-combine)
 library(tidyverse)  # Includes pipes %>% in R
 library(magrittr)   # Bi-directional pipes %<>%
 
@@ -71,6 +71,7 @@ set_emoji = function(status){
   paste(status, emoj, sep = "")  # Add corresponding emoji unicode to end of line
 }
 
+# TODO: Refactor this from hard-coded to be read in from a config file
 # Create vector of sampling location URLs --------------------------------------
 location_urls = c(
   "Ft. Funston" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4601",
@@ -107,9 +108,9 @@ poo_status = map_chr(location_urls, check_sewer_status) %>%  # Scrape sewer stat
 # Read vector with previous beach status from log file
 previous_status = readLines("./data/location_status.out")
 
-# Determine if updated status
-refresh_status = any(previous_status != poo_status)
-if (refresh_status) {
+# Determine if updated status, and if so, compose status tweets
+sewer_status_updated = any(previous_status != poo_status)
+if (sewer_status_updated) {
   # If status updated:
   # Concatinate location + status,
   # Collapse into a single string,
@@ -119,14 +120,13 @@ if (refresh_status) {
     paste(location_names, ., sep = ": ") %>%  # add location name
     paste(collapse = "\n")                    # new line between locations
 } else {
-  status_tweet = "The latest sample has not changed the posting status at Lincoln Way."
-  # Insert list with posting status here (eg. "Lincoln: Open" "Balboa: Open" "Sloat: Open")
+  status_tweet = NA
 }
 
 #
 # Check to see if tweet > 140 characters. Split if too long. -------------------
 #
-if (nchar(status_tweet) > 140){
+if (sewer_status_updated & nchar(status_tweet) > 140){
   # If all sampling sites have sewer overflow, there are too many characters.
   # As sampling locations have been added to the list, the status text will likely be > 140 regardless.
   # So, split into multiple strings (each with four sampling locations) for tweeting.
