@@ -38,6 +38,7 @@ library(stringr)   # For regex (regular expression) to remove unwanted character
 library(devtools)  # For sourcing a snippet (gist) of code from GitHub
 library(lubridate) # Dates and times
 library(dplyr)     # For data wrangling
+library(readr)     # For `read_csv`
 
 #
 # Read Station ID keys from table ----------------------------------------------
@@ -110,9 +111,9 @@ locs_dat = dat %>%
 #
 # Read last sample date(s) from log file ---------------------------------------
 #
-LogDateFile = "LastSampleDate.txt"
-if(file.exists(LogDateFile)) {
-  last_date = read_csv(file = LogDateFile, col_names = c('last_date', 'name'))
+log_date_file = "LastSampleDate.txt"
+if(file.exists(log_date_file)) {
+  last_date = read_csv(file = log_date_file, col_names = c('last_date', 'name'))
 }
 
 date_dat = locs_dat %>%
@@ -138,17 +139,11 @@ all_tweets = date_dat %>%
   pull(tweet_txt)
 
 #
-# Send any and all tweets ------------------------------------------------------
-#
-if(length(all_tweets) > 0)
-  map(.x = all_tweets, .f = twitteR::tweet)
-
-#
 # Log most recent sample date ------------------------------------------------
 #
 locs_dat %>%
   select(SAMPLE_DATE, name) %>%
-  write_csv(x = ., path = LogDateFile, col_names = FALSE)
+  write_csv(x = ., path = log_date_file, col_names = FALSE)
 
 #
 # ggplotting -----------------------------------------------------------------
