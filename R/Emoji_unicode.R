@@ -33,6 +33,11 @@ skull_emoji_uni = search_emoji("skull_and_crossbones") %>%
   unique() %>%
   emoji()
 
+# skull_emoji_uni = search_emoji("skull") %>%
+skull = search_emoji("skull")
+?search_emoji
+emoji("skull")
+
 # swimmer_emoji_uni = search_emoji('swimmer') %>%
 #   unique() %>%
 #   emoji()
