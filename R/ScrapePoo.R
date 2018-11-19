@@ -1,99 +1,64 @@
-# ScrapePoo.R
-# Author:     John R. Brandon, PhD
-# Purpose:    Scrape water quality data (coliform levels) from SF Water Power
-#             Sewer website
-# Motivation: To the best of my knowledge, it isn’t possible to receive automatic
-#             alerts (e.g. email updates) about beach closures at OB, San Francisco.
-# Notes:
+#!/usr/bin/env Rscript
+# Access status of sampling stations through SF's new API (updated ca. 2018), which
+#   returns an JSON formatted data files.
 #
-# List of sampling stations (not necessarily complete)
-#
-# BAY#202.4_SL, Crissy Field Beach East
-# BAY#202.5_SL, Crissy Field Beach West
-# BAY#210.1_SL, Hyde Street Pier
-# BAY#211_SL, Aquatic Park
-# BAY#220_SL, Mission Creek
-# BAY#300.1_SL, Sunnydale Cove
-# BAY#301.1_SL, Windsurfer Circle
-# BAY#301.2_SL, Jackrabbit Beach
-# BAY#320_SL, Islais Creek
-# OCEAN#15EAST_SL, Baker Beach East
-# OCEAN#15_SL, Baker Beach at Lobos Creek
-# OCEAN#16_SL, Baker Beach West
-# OCEAN#17_SL, China Beach
-# OCEAN#18_SL, Ocean Beach at Balboa Street
-# OCEAN#19_SL, Ocean Beach at Lincoln Way
-# OCEAN#20_SL, Ocean Beach at Pacheco Street
-# OCEAN#21_SL, Ocean Beach at Vicente Street
-# OCEAN#21.1_SL, Ocean Beach at Sloat Boulevard
-# OCEAN#22_SL, Fort Funston
-#
-# Copyright 2016 John R. Brandon
-# This program is distributed under the terms of the GNU General Public License v3
-# (provided in the LICENSE file of this repository).
-#
-library(ggplot2)   # Plotting
-library(magrittr)  # For pipes, e.g. %>%
-library(stringr)   # For regex (regular expression) to remove unwanted characters, etc.
-library(devtools)  # For sourcing a snippet (gist) of code from GitHub
-library(lubridate) # Dates and times
-library(dplyr)     # For data wrangling
-library(readr)     # For `read_csv`
+# Author: John Brandon
+library(tidyverse)  # for data wrangling and ggplotting
+library(jsonlite)
+library(RCurl)
 
-#
 # Read Station ID keys from table ----------------------------------------------
-#
 station_key = read.csv("./etc/station_key.csv", stringsAsFactors = FALSE)
 
-#
-# Download publically available data (*.csv) -----------------------------------
-#
-# Links through here:
-#  https://data.sfgov.org/Energy-and-Environment/Beach-Water-Quality/uz7x-u572
-# Seems regular sampling is done about once a week:
-#  See also: http://sfwater.org/cfapps/lims/beachmain1.cfm
-
-# Generate a temporary file name as recepticle for data file
-temporaryFile = tempfile()
-
-# Download data file into temporary file (admitedly convoluted, but it works)
-download.file("http://sfwater.org/tasks/lims.csv",
-              destfile = temporaryFile,
-              method = "curl")
-
-# Transfer temp data file into memory, and log time stamp
-dat = read.csv(temporaryFile, stringsAsFactors = FALSE)
-file.remove(temporaryFile)                # Remove temporary file
+# Log data from server by writing to output file in ./data directory -----------
 download_time = as.character(Sys.time())  # Timestamp
+download_time = str_replace(download_time, pattern = " ", replacement = "_")
 
-#
-# Log data by writing to output file in ./data directory -----------------------
-#
-log_file = paste("./data/", "lims_", download_time, ".csv", sep = "")  # File name
-write.csv(dat, file = log_file, row.names = FALSE)                     # Output *.csv
+# Try RCurl -- not the most elegant of solutions, I'm sure ---------------------
+xml_url = "https://infrastructure.sfwater.org/lims.asmx/getBeaches"
+status_xml = RCurl::getURL(xml_url, encoding="XML")  # utf-8, gzip
+status_xml = str_split(status_xml, pattern = '<')    # split into lists by comments
+status_xml = status_xml[[1]][3]                      # remove some comments
+status_xml = str_split(status_xml, pattern = '>')    # split into lists by comments
+status_xml = status_xml[[1]][2]                      # extract JSON body (just the data)
+status_dat = fromJSON(status_xml) %>% as.tibble()    # Parse JSON into data.frame
+status_dat = status_dat %>%
+  mutate(sample_date = as.Date(sample_date, format = '%m/%d/%y'))
+status_dat
+# A tibble: 19 x 9
+# stationid stationname                    cso   s_color posted p_color sample_date lat      lon
+# <chr>     <chr>                          <lgl> <chr>   <lgl>  <lgl>   <date>      <chr>    <chr>
+# 1 4601      Fort Funston                   NA    W       NA     NA      NA          37.71526 -122.50476
+# 2 4602      Ocean Beach at Sloat Boulevard NA    NA      NA     NA      2018-11-13  37.73567 -122.50769
 
-#
-# Clean downloaded data --------------------------------------------------------
-#
-# as.Date makes this friendly for plotting
-dat %<>% mutate(SAMPLE_DATE = as.Date(SAMPLE_DATE)) %>%
-         filter(SOURCE != "") # remove any extraneous lines at end of file
+# Get sampling counts data: `lims` ---------------------------------------------
+counts_url = 'https://infrastructure.sfwater.org/lims.asmx/getCSV'
+counts_status = RCurl::getURL(counts_url)
+counts_dat = jsonlite::fromJSON(counts_status) %>%
+  as.tibble() %>%
+  mutate(sample_date = as.Date(sample_date, format = '%m/%d/%y')) %>%
+  # The DATA variable has some ">" and "<" prefix signs. Remove those using regex.
+  mutate(data = str_replace_all(data, "[^[:alnum:]]", ""),
+         data = as.numeric(data))
 
-# The DATA variable has some ">" and "<" prefix signs. Remove those using regex.
-# Replace (remove) non-alphanumeric characters and convert DATA to numeric
-dat %<>% mutate(DATA = str_replace_all(DATA, "[^[:alnum:]]", ""),
-                DATA = as.numeric(DATA))
+counts_dat
+# A tibble: 687 x 7
+# source       sample_date analyte     data posted color cso
+# <chr>        <date>      <chr>      <dbl> <lgl>  <lgl> <lgl>
+# 1 BAY#202.4_SL 2018-11-13  COLI_E        10 NA     NA    NA
+# 2 BAY#202.4_SL 2018-11-13  COLI_TOTAL    10 NA     NA    NA
+
 
 #
 # Do a full join on the station_key and dat tables -----------------------------
 #
-# This should add a new column to the dat table, which has the full name of the
+# This should add a new column to the `counts_dat` table, which has the full name of the
 # ("SOURCE") sampling station associated with that ID. Otherwise station ID's
 # are unintelligable.
-dat %<>% full_join(station_key, dat, by = "SOURCE")
+counts_dat = full_join(station_key, counts_dat, by = "source") %>%
+  as_tibble()
 
 # Read locations to tweet from input file --------------------------------------
-#   and get number of locations in that list
 locs_to_tweet = readLines(con = "./etc/spots_to_tweet.txt")
 
 # Group data by location(name)  ------------------------------------------------
@@ -101,10 +66,10 @@ locs_to_tweet = readLines(con = "./etc/spots_to_tweet.txt")
 # Filter out only first row, which is the most recent sample
 # Eventually want to check dates for each location, such
 #   that only tweet if sample for given location is updated
-locs_dat = dat %>%
+locs_dat = counts_dat %>%
   group_by(name) %>%
   filter(name %in% locs_to_tweet,
-         ANALYTE == "COLI_E") %>%
+         analyte == "COLI_E") %>%
   slice(1) %>%
   ungroup()
 
@@ -115,10 +80,10 @@ log_date_file = "LastSampleDate.txt"
 if(file.exists(log_date_file)) {
   last_date = read_csv(file = log_date_file, col_names = c('last_date', 'name'))
 }
-
+# names(locs_dat); names(last_date)
 date_dat = locs_dat %>%
   left_join(last_date, by = 'name') %>%
-  mutate(updated = ifelse(SAMPLE_DATE > last_date, TRUE, FALSE))
+  mutate(updated = ifelse(sample_date > last_date, TRUE, FALSE))
 
 #
 # Create text for tweet ------------------------------------------------------
@@ -134,16 +99,18 @@ compose_tweet = function(sample_location, spot_count, sample_date){
 all_tweets = date_dat %>%
   filter(updated == TRUE | is.na(updated)) %>%
   mutate(tweet_txt = compose_tweet(sample_location = name,
-                                   spot_count = DATA,
-                                   sample_date = format(SAMPLE_DATE, '%b %d, %Y'))) %>%
+                                   spot_count = data,
+                                   sample_date = format(sample_date, '%b %d, %Y'))) %>%
   pull(tweet_txt)
 
 #
-# Log most recent sample date ------------------------------------------------
-#
-locs_dat %>%
-  select(SAMPLE_DATE, name) %>%
-  write_csv(x = ., path = log_date_file, col_names = FALSE)
+# Log most recent sample date ------------------------------------------
+#  Only do this if sample date has been updated
+if(any(date_dat$updated)){
+  locs_dat %>%
+    select(sample_date, name) %>%
+    write_csv(x = ., path = log_date_file, col_names = FALSE)
+}
 
 #
 # ggplotting -----------------------------------------------------------------
@@ -170,4 +137,3 @@ locs_dat %>%
 # }else{
 #   tweet_text = paste(tweet_text, "; ", "Counts are less than 400 parts per 100 ml.", sep = "")
 # }
-
