@@ -1,154 +1,63 @@
-# Code overview ----------------------------------------------------------------
+#!/usr/bin/env Rscript
 # GetBeachStatus.R
 #
 # Tasks:
-#   1. Scrape location posted status from webpage.
-#   2. Download image file showing map and sampling locations.
-#      This second task is a work in progress. The map of sampling locations
-#      is rendered from multiple images in the html, which complicates
-#      reverse engineering the map showing sampling locations.
+#   1. # Access status of sampling stations through SF's new API (updated ca. 2018), which
+#   returns an JSON formatted data files.
 #
 # Motivation:
 #   1. Augment information that can be be tweeted.
 #
-# Copyright 2016 John R. Brandon
+# Copyright 2018 John R. Brandon, PhD
 # This program is distributed under the terms of the GNU General Public License v3
-# (provided in the LICENSE file of this repository).
-library(rvest)      # Web scraping
-library(purrr)      # Map along vector(s) of inputs to function calls (split-apply-combine)
+# (provided in the LICENSE file of this repository); available from:
+#   https://github.com/John-Brandon/Beach_Poo_Bot
+#
 library(tidyverse)  # Includes pipes %>% in R
-library(magrittr)   # Bi-directional pipes %<>%
+library(jsonlite)
+library(RCurl)
 
 source("./R/Emoji_unicode.R")  # Returns a set of emoji unicode
 
-# Scrape beach status for a given sampling location ----------------------------
-get_beach_status = function(beach_name, url){
-  # Beaches should be posted as "Open" or "Closed".
-  # Code has been tested for Ocean Beach locations to Crissy Field.
-  # Bayside location confirmations would be good.
-  # Used SelectorGadget browser plug-in to manually ID css_selector with beach status.
-  # See also: https://blog.rstudio.org/2014/11/24/rvest-easy-web-scraping-with-r/
-  # On return, the posting status is prettified, eg blank first space removed
-  css_selector = "table:nth-child(7) td"
-  posted_status = read_html(url) %>%
-                  html_node(css = css_selector) %>%
-                  html_text() %>%
-                  gsub(x = ., pattern = "\r", replacement = "") %>%
-                  gsub(x = ., pattern = "\n", replacement = "") %>%
-                  gsub(x = ., pattern = "^.", replacement = "") %>%
-                  strsplit(split = ":", fixed = TRUE) %>%
-                  unlist()
-  posted_status[2]
-}
+# Scrape beach status  ---------------------------------------------------------
+xml_url = "https://infrastructure.sfwater.org/lims.asmx/getBeaches"
+status_xml = RCurl::getURL(xml_url, encoding="XML")  # utf-8, gzip
+status_xml = str_split(status_xml, pattern = '<')    # split into lists by comments
+status_xml = status_xml[[1]][3]                      # remove some comments
+status_xml = str_split(status_xml, pattern = '>')    # split into lists by comments
+status_xml = status_xml[[1]][2]                      # extract JSON body (just the data)
+status_dat = fromJSON(status_xml) %>% as.tibble()    # Parse JSON into data.frame
+status_dat = status_dat %>%                          # Wrangle the data
+  mutate(sample_date = as.Date(sample_date, format = '%m/%d/%y')) %>%
+  mutate(status = case_when(
+    is.na(cso) & is.na(posted) ~ 'Open',
+    is.na(cso) & !is.na(posted) ~ 'Posted',
+    !is.na(cso) ~ 'Sewer Overflow')
+  )
 
-check_sewer_status = function(url){
-  # Scrape for Combined Sewer Overflow Status
-  cs = "b"
-  read_html(url) %>%
-    html_node(css = cs) %>%
-    html_text %>%
-    unlist()  # return vector
-}
+tweet_post_dat = status_dat %>%
+  left_join(station_key, by = c('stationname' = 'name')) %>%
+  filter(tweet_post) %>%
+  select(stationname, tweet_order, tweet_group, short_name, status) %>%
+  mutate(tweet_text = map_chr(.x = status, .f = set_emoji)) %>%
+  mutate(tweet_text = paste(short_name, tweet_text, sep = ': ')) %>%
+         # tweet_text = paste(tweet_text, '\n', sep = '')) %>%
+  arrange(tweet_order)
 
-merge_statuses = function(sewer_status, loc_status){
-  # If not "Combined Sewer Overflow" status,
-  # replace with location "Posted" or "Open" status
-  if(is.na(sewer_status)){
-    sewer_status = loc_status
-  }
-  sewer_status  # return
-}
-
-set_emoji = function(status){
-  # Add emoji to latest beach status
-  if(status == "Open"){
-    emoj = ""  # If location posted as open, don't use emoji.
-  }else if(status == "Posted"){
-    emoj = warning_emoji_uni # red_circle_emoji_uni
-  }else{  # "Sewer Overflow"
-    emoj = paste(bangbang_emoji_uni, skull_emoji_uni, bangbang_emoji_uni)  #
-  }
-  paste(status, emoj, sep = "")  # Add corresponding emoji unicode to end of line
-}
-
-# TODO: Refactor this from hard-coded to be read in from a config file
-# Create vector of sampling location URLs --------------------------------------
-location_urls = c(
-  "Ft. Funston" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4601",
-  Sloat = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4602",
-  Lincoln = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4605",
-  Balboa = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4604",
-  "China Bch" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4607",
-  "Baker Bch W" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4608",
-  "Crissy Fld W" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4611",
-  "Crissy Fld E" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4612",
-  "Aquatic P" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4613",
-  "Mission Crk" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4618",
-  "Islais Crk" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4619",
-  "Windsurfer Cir" = "https://sfwater.org/cfapps/LIMS/beachresults3.cfm?loc=4616"
-)
-
-# Create vector of sampling location names
-location_names = names(location_urls)
-
-# Scrape status "Posted" or "Open" for each location ---------------------------
-# Uses `purrr` package and map function.
-# Mapping parallel elements of vector arguments to the function get_beach_status.
-location_status = map2_chr(location_names, location_urls, .f = get_beach_status) %>%
-  gsub(x = ., pattern = "^.", replacement = "")  # Remove leading blank spaces
-
-# Scrape Sewer Overflow Status -------------------------------------------------
-# Inserts location status "Open" or "Posted" if sewer status not "Combined Sewer Overflow"
-poo_status = map_chr(location_urls, check_sewer_status) %>%  # Scrape sewer status
-  gsub(x =., pattern = "Combined ", replacement = "", fixed = FALSE) %>%  # Edit string
-  map2_chr(., location_status, merge_statuses)  # Fill out statuses
+tweet_post_list = split(x = tweet_post_dat, f = tweet_post_dat$tweet_group) %>%
+  unname() %>%
+  map(.f = select, tweet_text) %>%
+  map(pull) %>%
+  map(paste, collapse = '\n')
 
 # Check to see if status changed at ANY beach since last run -------------------
-
 # Read vector with previous beach status from log file
-previous_status = readLines("./data/location_status.out")
+previous_status = readLines("./data/location_status.out")  # could make this data.frame with names
 
-# Determine if updated status, and if so, compose status tweets
-sewer_status_updated = any(previous_status != poo_status)
-if (sewer_status_updated) {
-  # If status updated:
-  # Concatinate location + status,
-  # Collapse into a single string,
-  # Add "\n" newline characters to format as a tweet.
-  status_tweet = poo_status %>%
-    map_chr(set_emoji) %>%  # add corresponding emoji
-    paste(location_names, ., sep = ": ") %>%  # add location name
-    paste(collapse = "\n")                    # new line between locations
-} else {
-  status_tweet = NA
-}
-
-#
-# Check to see if tweet > 140 characters. Split if too long. -------------------
-#
-if (sewer_status_updated & nchar(status_tweet) > 140){
-  # If all sampling sites have sewer overflow, there are too many characters.
-  # As sampling locations have been added to the list, the status text will likely be > 140 regardless.
-  # So, split into multiple strings (each with four sampling locations) for tweeting.
-
-  # First split. Returns a character vector with two string elements.
-  status_tweet %<>% strsplit(x = ., split = c("China Bch"), fixed = TRUE) %>% unlist()
-
-  # Replace text that was destroyed by the strsplit function.
-  status_tweet[2] = paste("China Bch", status_tweet[2], sep = "")
-
-  # Second split
-  status_tweet %<>% strsplit(x = ., split = c("Aquatic P"), fixed = TRUE) %>% unlist()
-
-  # Replace text that was destroyed by the strsplit function.
-  status_tweet[3] = paste("Aquatic P", status_tweet[3], sep = "")
-
-  # Re-order the vector to tweet locations in order read from the ocean to the bay
-  tmp_status = status_tweet
-  tmp_status[3] = status_tweet[1]
-  tmp_status[1] = status_tweet[3]
-  status_tweet = tmp_status
-}
+# # Determine if updated status, and if so, compose status tweets
+sewer_status_updated = any(previous_status != tweet_post_dat$status)
 
 # Write vector with each beach status to log file
-write(x = poo_status, file = "./data/location_status.out", sep = "\n")
+if(sewer_status_updated){
+  write(x = tweet_post_dat$status, file = "./data/location_status.out", sep = "\n")
+}

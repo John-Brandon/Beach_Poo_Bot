@@ -1,3 +1,4 @@
+#!/usr/bin/env Rscript
 # TweetShit.R
 # Author:     John R. Brandon, PhD
 # Purpose:    Tweet water quality data (coliform levels) from SF Water Power
@@ -5,7 +6,7 @@
 # Notes:      ScrapePoo.R does the heavy lifting. See the comments in that
 #             file for more details re: scraping, logging etc.
 #
-# Copyright 2016 John R. Brandon
+# Copyright 2018 John R. Brandon
 # This program is distributed under the terms of the GNU General Public License v3
 # (provided in the ../LICENSE file).
 
@@ -15,7 +16,7 @@ library("twitteR")  # R interface with Twitter API
 rm(list = ls())     # Clear workspace
 print(Sys.time())   # Written to stdout log file as a check.
 
-# Run code in ScrapeWebData.R file
+# Run scripts to access data from API ------------------------------------------
 # The Bash rShellScript.sh starts in ./BeachWater directory (e.g. ~/BeachWater)
 # The R source codes (and Bash script) are under ./BeachWater/R
 source("./R/ScrapePoo.R")
@@ -40,27 +41,19 @@ setup_twitter_oauth(consumer_key = api_key,
                     access_token = access_token,
                     access_secret = access_secret)
 
-#
 # Send any updated E.coli sample tweets ----------------------------------------
-#
 if(length(all_tweets) > 0)
   map(.x = all_tweets, .f = twitteR::tweet)
 
-#
 # If sewer-overflow/posting status updated tweet list --------------------------
-#
 if(sewer_status_updated)
-  map(.x = status_tweet, .f = twitteR::tweet)
+  map(.x = tweet_post_list, .f = twitteR::tweet)
 
-# if(sewer_status_updated){
-#   for(ii in seq_along(status_tweet)){
-#     tweet(status_tweet[ii])  # Tweet status of sampling locations ("Open" or "Posted")
-#   }
-# }
-
-# Exit message to stdout log file
-print("status_tweet")
-print(status_tweet)
+# Exit message to stdout log file ----------------------------------------------
+print("all_tweets")
+print(all_tweets)
+print("tweet_post_list")
+print(tweet_post_list)
 print("")
 print("Exiting TweetShit")
 print(Sys.time())   # Written to stdout log file as a check.

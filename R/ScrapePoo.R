@@ -2,52 +2,40 @@
 # Access status of sampling stations through SF's new API (updated ca. 2018), which
 #   returns an JSON formatted data files.
 #
-# Author: John Brandon
+# Copyright 2018 John R. Brandon, PhD
+# This program is distributed under the terms of the GNU General Public License v3
+# provided in the LICENSE file of this repository; available from:
+#   https://github.com/John-Brandon/Beach_Poo_Bot
 library(tidyverse)  # for data wrangling and ggplotting
 library(jsonlite)
 library(RCurl)
 
 # Read Station ID keys from table ----------------------------------------------
-station_key = read.csv("./etc/station_key.csv", stringsAsFactors = FALSE)
+station_key = read.csv("./etc/station_key.csv", stringsAsFactors = FALSE) %>%
+  as_tibble()
 
 # Log data from server by writing to output file in ./data directory -----------
 download_time = as.character(Sys.time())  # Timestamp
 download_time = str_replace(download_time, pattern = " ", replacement = "_")
-
-# Try RCurl -- not the most elegant of solutions, I'm sure ---------------------
-xml_url = "https://infrastructure.sfwater.org/lims.asmx/getBeaches"
-status_xml = RCurl::getURL(xml_url, encoding="XML")  # utf-8, gzip
-status_xml = str_split(status_xml, pattern = '<')    # split into lists by comments
-status_xml = status_xml[[1]][3]                      # remove some comments
-status_xml = str_split(status_xml, pattern = '>')    # split into lists by comments
-status_xml = status_xml[[1]][2]                      # extract JSON body (just the data)
-status_dat = fromJSON(status_xml) %>% as.tibble()    # Parse JSON into data.frame
-status_dat = status_dat %>%
-  mutate(sample_date = as.Date(sample_date, format = '%m/%d/%y'))
-status_dat
-# A tibble: 19 x 9
-# stationid stationname                    cso   s_color posted p_color sample_date lat      lon
-# <chr>     <chr>                          <lgl> <chr>   <lgl>  <lgl>   <date>      <chr>    <chr>
-# 1 4601      Fort Funston                   NA    W       NA     NA      NA          37.71526 -122.50476
-# 2 4602      Ocean Beach at Sloat Boulevard NA    NA      NA     NA      2018-11-13  37.73567 -122.50769
 
 # Get sampling counts data: `lims` ---------------------------------------------
 counts_url = 'https://infrastructure.sfwater.org/lims.asmx/getCSV'
 counts_status = RCurl::getURL(counts_url)
 counts_dat = jsonlite::fromJSON(counts_status) %>%
   as.tibble() %>%
+  # select(-posted, -color, -cso)  %>%  # These columns are not populated (as of 2018-11-28)
+  filter(!is.na(analyte)) %>%
   mutate(sample_date = as.Date(sample_date, format = '%m/%d/%y')) %>%
   # The DATA variable has some ">" and "<" prefix signs. Remove those using regex.
   mutate(data = str_replace_all(data, "[^[:alnum:]]", ""),
          data = as.numeric(data))
 
-counts_dat
+counts_dat  # Check
 # A tibble: 687 x 7
 # source       sample_date analyte     data posted color cso
 # <chr>        <date>      <chr>      <dbl> <lgl>  <lgl> <lgl>
 # 1 BAY#202.4_SL 2018-11-13  COLI_E        10 NA     NA    NA
 # 2 BAY#202.4_SL 2018-11-13  COLI_TOTAL    10 NA     NA    NA
-
 
 #
 # Do a full join on the station_key and dat tables -----------------------------
@@ -57,6 +45,22 @@ counts_dat
 # are unintelligable.
 counts_dat = full_join(station_key, counts_dat, by = "source") %>%
   as_tibble()
+
+# Plot correlation between total coliform and e.coli levels (log-log scale)
+# counts_dat %>%
+#   select(short_name, sample_date, analyte, data) %>%
+#   # filter(!(name %in% c('Fort Funston', 'China Beach'))) %>%
+#   filter(!is.na(short_name)) %>%
+#   spread(key = analyte, value = data) %>%
+#   # group_by(short_name) %>%
+#   # arrange(analyte) %>%
+#   ggplot(aes(x = log(COLI_E), y = log(COLI_TOTAL))) +
+#   geom_point(size = 2, alpha = 0.5) +
+#   geom_smooth(method = lm) +
+#   facet_wrap(~short_name) +
+#   geom_abline() +
+#   xlab('Ln (E.coli)') +
+#   ylab('Ln (Total Coliform Count)')
 
 # Read locations to tweet from input file --------------------------------------
 locs_to_tweet = readLines(con = "./etc/spots_to_tweet.txt")
@@ -73,21 +77,21 @@ locs_dat = counts_dat %>%
   slice(1) %>%
   ungroup()
 
-#
+# locs_dat  # Check
+
 # Read last sample date(s) from log file ---------------------------------------
-#
 log_date_file = "LastSampleDate.txt"
 if(file.exists(log_date_file)) {
   last_date = read_csv(file = log_date_file, col_names = c('last_date', 'name'))
+} else {
+  stop('ERROR: File Not Found. LastSampleDate.txt')
 }
-# names(locs_dat); names(last_date)
+
 date_dat = locs_dat %>%
   left_join(last_date, by = 'name') %>%
   mutate(updated = ifelse(sample_date > last_date, TRUE, FALSE))
 
-#
 # Create text for tweet ------------------------------------------------------
-#
 compose_tweet = function(sample_location, spot_count, sample_date){
   # Given sampling data for a location, compose and format a tweet
   paste0(sample_location, "\n",
@@ -103,7 +107,6 @@ all_tweets = date_dat %>%
                                    sample_date = format(sample_date, '%b %d, %Y'))) %>%
   pull(tweet_txt)
 
-#
 # Log most recent sample date ------------------------------------------
 #  Only do this if sample date has been updated
 if(any(date_dat$updated)){
@@ -129,11 +132,3 @@ if(any(date_dat$updated)){
 # string_today = as.character(today())  # Date stamp for file name
 # plt_file_name = paste("timeseries_", string_today, ".png", sep = "")
 # ggsave(filename = plt_file_name, plot = plt, device = "png")  # Save plot to file
-
-
-# Add text to tweet based on boolean assessment of whether at alert levels.
-# if(lincoln_poo >= 400){
-#   tweet_text = paste("ALERT -- OCEAN BEACH LIKELY POSTED AS CLOSED -- ", "\n", tweet_text, sep = "")
-# }else{
-#   tweet_text = paste(tweet_text, "; ", "Counts are less than 400 parts per 100 ml.", sep = "")
-# }
